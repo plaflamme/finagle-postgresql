@@ -1,0 +1,9 @@
+target/
+.project
+.classpath
+logs/
+.#*
+*.*#
+*.*~
+.idea/
+.idea_modules/
