@@ -53,6 +53,7 @@ lazy val finaglePostgresql = Project(
   organization := "com.hopper",
   libraryDependencies ++= Seq(
     "com.twitter" %% "finagle-netty4" % finagleVersion,
-    "com.twitter" %% "util-stats" % finagleVersion
+    "com.twitter" %% "util-stats" % finagleVersion,
+    "io.zonky.test" % "embedded-postgres" % "1.2.6" % "test",
   )
 )
