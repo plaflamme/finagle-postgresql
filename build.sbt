@@ -2,7 +2,7 @@ import sbtrelease.ReleasePlugin.autoImport.ReleaseKeys._
 import sbtrelease.ReleaseStateTransformations._
 import sbtrelease._
 
-val finagleVersion = "19.7.0"
+val finagleVersion = "19.9.0"
 
 lazy val inquireReleaseVersion: ReleaseStep = { st: State =>
   val extracted = Project.extract(st)
