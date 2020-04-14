@@ -1,3 +1,4 @@
+import com.hopper.sbt.HopperDeps
 import sbtrelease.ReleasePlugin.autoImport.ReleaseKeys._
 import sbtrelease.ReleaseStateTransformations._
 import sbtrelease._
@@ -54,6 +55,20 @@ lazy val finaglePostgresql = Project(
   libraryDependencies ++= Seq(
     "com.twitter" %% "finagle-netty4" % finagleVersion,
     "com.twitter" %% "util-stats" % finagleVersion,
-    "io.zonky.test" % "embedded-postgres" % "1.2.6" % "test",
+
+    // put specs on the IntegrationTest classpath
+    HopperDeps.CompileDeps.specs2Core % "test,it",
+    HopperDeps.CompileDeps.specs2Scalacheck % "test,it",
+    HopperDeps.CompileDeps.specs2Mock % "test,it",
+    HopperDeps.CompileDeps.specs2Junit % "test,it",
+    HopperDeps.CompileDeps.specs2MatcherExtra % "test,it",
+    "io.zonky.test" % "embedded-postgres" % "1.2.6" % IntegrationTest,
+  ),
+  Defaults.itSettings,
+).configs(IntegrationTest)
+  .settings(
+    // This puts the `Test` classes on the IntegrationTest classpath.
+    //   TODO: it's a bit verbose and opaque. Consider sharing source or some `test` subproject
+    dependencyClasspath in IntegrationTest := (dependencyClasspath in IntegrationTest).value ++ (exportedProducts in Test).value,
+    fork in IntegrationTest := true,
   )
-)
