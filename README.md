@@ -17,6 +17,7 @@
 - [ ] [function call](https://www.postgresql.org/docs/current/protocol-flow.html#id-1.10.5.7.6)
 - [x] [TLS](https://www.postgresql.org/docs/current/protocol-flow.html#id-1.10.5.7.11)
 - [ ] [cancellation](https://www.postgresql.org/docs/current/protocol-flow.html#id-1.10.5.7.9)
+    - [ ] support cancelling [infnite SQL queries](https://www.quora.com/Is-it-possible-to-write-an-SQL-query-that-runs-infinitely)
 
 ### Client
 
