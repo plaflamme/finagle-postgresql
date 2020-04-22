@@ -11,7 +11,7 @@
 - [x] [simple query support](https://www.postgresql.org/docs/current/protocol-flow.html#id-1.10.5.7.4)
 - [x] [multi-line simple query support](https://www.postgresql.org/docs/current/protocol-flow.html#PROTOCOL-FLOW-MULTI-STATEMENT)
 - [ ] [COPY operations](https://www.postgresql.org/docs/current/protocol-flow.html#PROTOCOL-COPY)
-- [ ] [extended query support](https://www.postgresql.org/docs/current/protocol-flow.html#PROTOCOL-FLOW-EXT-QUERY)
+- [x] [extended query support](https://www.postgresql.org/docs/current/protocol-flow.html#PROTOCOL-FLOW-EXT-QUERY)
     - [ ] cache and close prepared statements
     - [ ] portal suspension / scanning
 - [ ] [function call](https://www.postgresql.org/docs/current/protocol-flow.html#id-1.10.5.7.6)
