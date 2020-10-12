@@ -1,3 +1,5 @@
+import java.nio.charset.StandardCharsets
+
 import com.hopper.sbt.HopperDeps
 import sbtrelease.ReleasePlugin.autoImport.ReleaseKeys._
 import sbtrelease.ReleaseStateTransformations._
@@ -45,6 +47,13 @@ lazy val root = Project(
   finaglePostgresql
 )
 
+val genPgTypeTask = Def.task {
+  val source = BuiltinTypeGenerator.generate((sourceDirectory in Compile).value / "pg" / "pg_type.dat")
+  val output = sourceManaged.value / "pg_type" / "PgType.scala"
+  IO.write(output, source, StandardCharsets.UTF_8)
+  output :: Nil
+}
+
 lazy val finaglePostgresql = Project(
   id = "finagle-postgresql",
   base = file("finagle-postgresql"),
@@ -52,6 +61,8 @@ lazy val finaglePostgresql = Project(
   hopperBase,
   name := "finagle-postgresql",
   organization := "com.hopper",
+  sourceGenerators in Compile += genPgTypeTask,
+  managedSourceDirectories in Compile += sourceManaged.value / "pg_type",
   libraryDependencies ++= Seq(
     "com.twitter" %% "finagle-netty4" % finagleVersion,
     "com.twitter" %% "util-stats" % finagleVersion,
