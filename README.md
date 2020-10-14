@@ -1,6 +1,10 @@
 # PostgreSQL Client on Finagle
 
+![CI](https://github.com/plaflamme/finagle-postgresql/workflows/CI/badge.svg)
+
 ## Status
+
+Work in progress.
 
 ### Protocol
 
@@ -23,5 +27,6 @@
 
 - [x] non `Service`-based client (a.k.a: rich client), something like [finagle-mysql](https://github.com/twitter/finagle/blob/develop/finagle-mysql/src/main/scala/com/twitter/finagle/mysql/Client.scala#L66)
 - [ ] error decoding and handling
-- [ ] value encoding / decoding
+- [x] wire value decoding
+- [ ] wire value encoding
 - [ ] custom types
