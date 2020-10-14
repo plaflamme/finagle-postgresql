@@ -28,8 +28,8 @@ val base = Seq(
     "-Ywarn-nullary-unit",
     "-Ywarn-unused:imports",
     "-Ywarn-unused:locals",
-//    "-Ywarn-unused:params",
-//    "-Ywarn-unused:patvars",
+    "-Ywarn-unused:params",
+    "-Ywarn-unused:patvars",
     "-Ywarn-unused:privates",
   )
 )
