@@ -99,8 +99,23 @@ object BuiltinTypeGenerator {
       |
       |object PgType {
       |
+      |  /**
+      |   * Lookup a type by its Oid.
+      |   *
+      |   * @return Some if such a type exists, None otherwise.
+      |   */
       |  def byOid(oid: Oid): Option[PgType] =
       |    pgTypeByOid.get(oid)
+      |
+      |  /**
+      |   * Find the corresponding one-dimensional array type for the specified element type.
+      |   *
+      |   * For example, passing `PgType.Int4` to this function would return `Some(PgType.Int4Vector)`.
+      |   *
+      |   * @return the corresponding array type, None if no such type exists.
+      |   */
+      |  def arrayOf(elementType: PgType): Option[PgType] =
+      |    pgArrayOidByElementType.get(elementType)
       |
       |""".stripMargin
 
@@ -129,6 +144,21 @@ object BuiltinTypeGenerator {
       |""".stripMargin
   }
 
+  def arrayOf(reg: PgTypeRegistry): String = {
+    val patterns = for {
+      elementType <- reg.types
+      arrayOid <- elementType.array_type_oid.toList
+      arrayType <- reg.byOid(arrayOid).toList
+    } yield {
+      s"${elementType.ident} -> ${arrayType.ident}"
+    }
+
+    s"""val pgArrayOidByElementType: Map[PgType, PgType] = Map(
+       |${indent(patterns.mkString(",\n"), 2)}
+       |)
+       |""".stripMargin
+  }
+
   def typeVals(reg: PgTypeRegistry) = {
     reg.types
       .map { pgType =>
@@ -148,7 +178,7 @@ object BuiltinTypeGenerator {
   }
 
   def body(reg: PgTypeRegistry): String = {
-    byOid(reg) ++ typeVals(reg)
+    byOid(reg) ++ arrayOf(reg) ++ typeVals(reg)
   }
 
   def generate(pgTypeFile: File) =
