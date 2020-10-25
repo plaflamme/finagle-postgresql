@@ -70,6 +70,7 @@ lazy val finaglePostgresql = Project(id = "finagle-postgresql", base = file("fin
   .configs(IntegrationTest)
   .settings(
     Defaults.itSettings,
+    inConfig(IntegrationTest)(org.scalafmt.sbt.ScalafmtPlugin.scalafmtConfigSettings),
     // This puts the `Test` classes on the IntegrationTest classpath.
     //   TODO: it's a bit verbose and opaque. Consider sharing source or some `test` subproject
     dependencyClasspath in IntegrationTest := (dependencyClasspath in IntegrationTest).value ++ (exportedProducts in Test).value,
