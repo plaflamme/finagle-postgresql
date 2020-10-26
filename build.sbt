@@ -1,4 +1,5 @@
 import java.nio.charset.StandardCharsets
+import sbt.{IntegrationTest => SbtIntegrationTest}
 
 val finagleVersion = "20.4.0"
 val specs2Version = "4.9.1"
@@ -31,6 +32,10 @@ val genPgTypeTask = Def.task {
   output :: Nil
 }
 
+// https://www.scala-sbt.org/1.x/docs/Testing.html#Custom+test+configuration
+// By making IntegrationTest extend Test, we make test classes visible to IntegrationTest.
+lazy val IntegrationTest = SbtIntegrationTest.extend(Test)
+
 lazy val finaglePostgresql = Project(id = "finagle-postgresql", base = file("finagle-postgresql"))
   .settings(
     name := "finagle-postgresql",
@@ -40,9 +45,9 @@ lazy val finaglePostgresql = Project(id = "finagle-postgresql", base = file("fin
     libraryDependencies ++= Seq(
       "com.twitter" %% "finagle-netty4" % finagleVersion,
       "com.twitter" %% "util-stats" % finagleVersion,
-      "org.specs2" %% "specs2-core" % specs2Version % "test,it",
-      "org.specs2" %% "specs2-scalacheck" % specs2Version % "test,it",
-      "org.specs2" %% "specs2-matcher-extra" % specs2Version % "test,it",
+      "org.specs2" %% "specs2-core" % specs2Version % Test,
+      "org.specs2" %% "specs2-scalacheck" % specs2Version % Test,
+      "org.specs2" %% "specs2-matcher-extra" % specs2Version % Test,
       "io.zonky.test" % "embedded-postgres" % "1.2.6" % IntegrationTest,
     ),
   )
@@ -50,8 +55,5 @@ lazy val finaglePostgresql = Project(id = "finagle-postgresql", base = file("fin
   .settings(
     Defaults.itSettings,
     inConfig(IntegrationTest)(org.scalafmt.sbt.ScalafmtPlugin.scalafmtConfigSettings),
-    // This puts the `Test` classes on the IntegrationTest classpath.
-    //   TODO: it's a bit verbose and opaque. Consider sharing source or some `test` subproject
-    dependencyClasspath in IntegrationTest := (dependencyClasspath in IntegrationTest).value ++ (exportedProducts in Test).value,
     fork in IntegrationTest := true,
   )
