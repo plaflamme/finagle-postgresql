@@ -8,6 +8,9 @@ on:
 
 jobs:
   build:
+    strategy:
+      matrix:
+        scala: [2.12.12, 2.13.3]
 
     runs-on: ubuntu-latest
 
@@ -27,6 +30,6 @@ jobs:
       - name: scalafmt
         run: sbt scalafmtCheckAll
       - name: Compile
-        run: sbt compile
+        run: sbt ++${{matrix.scala}} compile
       - name: Run tests
-        run: sbt -J-Xmx2G test it:test
+        run: sbt -J-Xmx2G ++${{matrix.scala}} test it:test

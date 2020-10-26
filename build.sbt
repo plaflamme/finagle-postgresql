@@ -3,9 +3,14 @@ import java.nio.charset.StandardCharsets
 val finagleVersion = "20.4.0"
 val specs2Version = "4.9.1"
 
+val scala212 = "2.12.12"
+val scala213 = "2.13.3"
+val scalaVersions = Seq(scala212, scala213)
+
 val base = Seq(
   organization := "com.hopper",
-  scalaVersion := "2.12.10",
+  scalaVersion := scala212,
+  crossScalaVersions := Seq(scala212, scala213)
 )
 
 lazy val root = Project(
@@ -13,6 +18,8 @@ lazy val root = Project(
   base = file("."),
 ).settings(
   base,
+  crossScalaVersions := Nil,
+  publish / skip := true
 ).aggregate(
   finaglePostgresql
 )
