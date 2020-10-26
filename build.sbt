@@ -6,32 +6,6 @@ val specs2Version = "4.9.1"
 val base = Seq(
   organization := "com.hopper",
   scalaVersion := "2.12.10",
-  scalacOptions ++= Seq(
-    "-Xfatal-warnings",
-    "-unchecked",
-    "-deprecation",
-    "-feature",
-    "-language:existentials",
-    "-language:higherKinds",
-    "-language:implicitConversions",
-    "-Xlint:adapted-args",
-    "-Xlint:by-name-right-associative",
-    "-Xlint:constant",
-    "-Xlint:missing-interpolator",
-    "-Xlint:nullary-override",
-    "-Xlint:nullary-unit",
-    "-Xlint:option-implicit",
-    "-Xlint:package-object-classes",
-    "-Xlint:unsound-match",
-    "-Ywarn-dead-code",
-    "-Ywarn-nullary-override",
-    "-Ywarn-nullary-unit",
-    "-Ywarn-unused:imports",
-    "-Ywarn-unused:locals",
-    "-Ywarn-unused:params",
-    "-Ywarn-unused:patvars",
-    "-Ywarn-unused:privates",
-  )
 )
 
 lazy val root = Project(
