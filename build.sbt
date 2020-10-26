@@ -59,11 +59,9 @@ lazy val finaglePostgresql = Project(id = "finagle-postgresql", base = file("fin
     libraryDependencies ++= Seq(
       "com.twitter" %% "finagle-netty4" % finagleVersion,
       "com.twitter" %% "util-stats" % finagleVersion,
-
       "org.specs2" %% "specs2-core" % specs2Version % "test,it",
       "org.specs2" %% "specs2-scalacheck" % specs2Version % "test,it",
       "org.specs2" %% "specs2-matcher-extra" % specs2Version % "test,it",
-
       "io.zonky.test" % "embedded-postgres" % "1.2.6" % IntegrationTest,
     ),
   )
