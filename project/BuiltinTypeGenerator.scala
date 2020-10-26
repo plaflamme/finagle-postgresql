@@ -28,7 +28,8 @@ object BuiltinTypeGenerator {
 
     def ident = {
       val id = snakeIdent.toPascalCase
-      if(!Symbols(id)) id else {
+      if (!Symbols(id)) id
+      else {
         s"${id}Type"
       }
     }
@@ -149,9 +150,7 @@ object BuiltinTypeGenerator {
       elementType <- reg.types
       arrayOid <- elementType.array_type_oid.toList
       arrayType <- reg.byOid(arrayOid).toList
-    } yield {
-      s"${elementType.ident} -> ${arrayType.ident}"
-    }
+    } yield s"${elementType.ident} -> ${arrayType.ident}"
 
     s"""val pgArrayOidByElementType: Map[PgType, PgType] = Map(
        |${indent(patterns.mkString(",\n"), 2)}
@@ -159,7 +158,7 @@ object BuiltinTypeGenerator {
        |""".stripMargin
   }
 
-  def typeVals(reg: PgTypeRegistry) = {
+  def typeVals(reg: PgTypeRegistry) =
     reg.types
       .map { pgType =>
         val kind = pgType.typcategory match {
@@ -175,11 +174,9 @@ object BuiltinTypeGenerator {
            |""".stripMargin
       }
       .mkString("\n")
-  }
 
-  def body(reg: PgTypeRegistry): String = {
+  def body(reg: PgTypeRegistry): String =
     byOid(reg) ++ arrayOf(reg) ++ typeVals(reg)
-  }
 
   def generate(pgTypeFile: File) =
     header ++ indent(body(parsePgType(pgTypeFile))) ++ footer
