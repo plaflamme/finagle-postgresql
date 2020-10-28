@@ -10,7 +10,7 @@ jobs:
   fmt:
     runs-on: ubuntu-latest
     steps:
-      - uses: ./github/actions/base
+      - uses: ./.github/actions/base
       - name: scalafmt
         run: sbt scalafmtCheckAll
 
@@ -23,7 +23,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: ./github/actions/base
+      - uses: ./.github/actions/base
       - name: Compile
         run: sbt ++${{matrix.scala}} compile test:compile it:compile
       - name: Run unit tests
@@ -35,6 +35,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: ./github/actions/base
+      - uses: ./.github/actions/base
       - name: Run Integration Tests
         run: sbt -J-Xmx2G it:test
