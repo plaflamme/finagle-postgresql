@@ -11,7 +11,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: ./.github/actions/base
+      - name: Set up JDK 1.8
+        uses: joschi/setup-jdk@v2 # AdoptOpenJDK
+        with:
+          java-version: 8
       - name: scalafmt
         run: sbt scalafmtCheckAll
 
@@ -25,7 +28,17 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - uses: ./.github/actions/base
+      - name: Set up JDK 1.8
+        uses: joschi/setup-jdk@v2 # AdoptOpenJDK
+        with:
+          java-version: 8
+      - name: Cache sbt and ivy dependencies
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.ivy2/cache
+            ~/.sbt
+          key: ${{ runner.os }}-sbt-${{ hashFiles('**/build.sbt') }}
       - name: Compile
         run: sbt ++${{matrix.scala}} compile test:compile it:compile
       - name: Run unit tests
@@ -38,6 +51,16 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - uses: ./.github/actions/base
+      - name: Set up JDK 1.8
+        uses: joschi/setup-jdk@v2 # AdoptOpenJDK
+        with:
+          java-version: 8
+      - name: Cache sbt and ivy dependencies
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.ivy2/cache
+            ~/.sbt
+          key: ${{ runner.os }}-sbt-${{ hashFiles('**/build.sbt') }}
       - name: Run Integration Tests
         run: sbt -J-Xmx2G it:test
