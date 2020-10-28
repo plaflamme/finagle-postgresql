@@ -7,7 +7,15 @@ on:
     branches: [ master ]
 
 jobs:
+  fmt:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: ./github/actions/base
+      - name: scalafmt
+        run: sbt scalafmtCheckAll
+
   build:
+    needs: fmt
     strategy:
       matrix:
         scala: [2.12.12, 2.13.3]
@@ -15,21 +23,18 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
-      - name: Cache sbt and ivy dependencies
-        uses: actions/cache@v2
-        with:
-          path: |
-            ~/.ivy2/cache
-            ~/.sbt
-          key: ${{ runner.os }}-sbt-${{ hashFiles('**/build.sbt') }}
-      - name: Set up JDK 1.8
-        uses: joschi/setup-jdk@v2 # AdoptOpenJDK
-        with:
-          java-version: 8
-      - name: scalafmt
-        run: sbt scalafmtCheckAll
+      - uses: ./github/actions/base
       - name: Compile
-        run: sbt ++${{matrix.scala}} compile
-      - name: Run tests
-        run: sbt -J-Xmx2G ++${{matrix.scala}} test it:test
+        run: sbt ++${{matrix.scala}} compile test:compile it:compile
+      - name: Run unit tests
+        run: sbt -J-Xmx2G ++${{matrix.scala}} test
+
+  it:
+    needs: fmt
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: ./github/actions/base
+      - name: Run Integration Tests
+        run: sbt -J-Xmx2G it:test
