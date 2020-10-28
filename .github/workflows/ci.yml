@@ -15,6 +15,13 @@ jobs:
         uses: joschi/setup-jdk@v2 # AdoptOpenJDK
         with:
           java-version: 8
+      - name: Cache sbt and ivy dependencies
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.ivy2/cache
+            ~/.sbt
+          key: ${{ runner.os }}-sbt-${{ hashFiles('**/build.sbt') }}
       - name: scalafmt
         run: sbt scalafmtCheckAll
 
