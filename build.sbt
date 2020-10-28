@@ -48,6 +48,8 @@ lazy val finaglePostgresql = Project(id = "finagle-postgresql", base = file("fin
       "org.specs2" %% "specs2-core" % specs2Version % Test,
       "org.specs2" %% "specs2-scalacheck" % specs2Version % Test,
       "org.specs2" %% "specs2-matcher-extra" % specs2Version % Test,
+      "org.typelevel" %% "jawn-parser" % "1.0.0" % Test,
+      "org.typelevel" %% "jawn-ast" % "1.0.0" % Test,
       "io.zonky.test" % "embedded-postgres" % "1.2.6" % IntegrationTest,
     ),
   )
