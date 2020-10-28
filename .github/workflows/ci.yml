@@ -53,6 +53,9 @@ jobs:
 
   it:
     needs: fmt
+    strategy:
+      matrix:
+        postgres: [12.1.0, 11.8.0, 10.13.0, 9.6.18]
 
     runs-on: ubuntu-latest
 
@@ -70,4 +73,6 @@ jobs:
             ~/.sbt
           key: ${{ runner.os }}-sbt-${{ hashFiles('**/build.sbt') }}
       - name: Run Integration Tests
+        env:
+          POSTGRES_VERSION: ${{matrix.postgres}}
         run: sbt -J-Xmx2G it:test

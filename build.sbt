@@ -3,6 +3,11 @@ import sbt.{IntegrationTest => SbtIntegrationTest}
 
 val finagleVersion = "20.4.0"
 val specs2Version = "4.9.1"
+// one of https://mvnrepository.com/artifact/io.zonky.test.postgres/embedded-postgres-binaries-bom
+// though > 12.1.0 doesn't work on MacOS: https://github.com/zonkyio/embedded-postgres-binaries/issues/21
+// We'll have to switch to docker at some point,
+//   but we do a lot of setup from code which is unlikely to work with docker + CI.
+val pgVersion = sys.props.getOrElse("POSTGRES_VERSION", "12.1.0")
 
 val scala212 = "2.12.12"
 val scala213 = "2.13.3"
@@ -51,6 +56,8 @@ lazy val finaglePostgresql = Project(id = "finagle-postgresql", base = file("fin
       "org.typelevel" %% "jawn-parser" % "1.0.0" % Test,
       "org.typelevel" %% "jawn-ast" % "1.0.0" % Test,
       "io.zonky.test" % "embedded-postgres" % "1.2.6" % IntegrationTest,
+      "io.zonky.test.postgres" % "embedded-postgres-binaries-linux-amd64" % pgVersion % IntegrationTest,
+      "io.zonky.test.postgres" % "embedded-postgres-binaries-darwin-amd64" % pgVersion % IntegrationTest,
     ),
   )
   .configs(IntegrationTest)
