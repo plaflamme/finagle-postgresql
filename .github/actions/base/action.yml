@@ -1,9 +1,8 @@
 name: 'Base setup'
-description: 'Checkout and setup jdk / sbt with caching'
+description: 'Setup jdk / sbt and caching'
 runs:
   using: "composite"
   steps:
-    - uses: actions/checkout@v2
     - name: Cache sbt and ivy dependencies
       uses: actions/cache@v2
       with:
