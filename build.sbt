@@ -56,8 +56,10 @@ lazy val finaglePostgresql = Project(id = "finagle-postgresql", base = file("fin
       "org.typelevel" %% "jawn-parser" % "1.0.0" % Test,
       "org.typelevel" %% "jawn-ast" % "1.0.0" % Test,
       "io.zonky.test" % "embedded-postgres" % "1.2.6" % IntegrationTest,
+      // scala-steward:off
       "io.zonky.test.postgres" % "embedded-postgres-binaries-linux-amd64" % pgVersion % IntegrationTest,
       "io.zonky.test.postgres" % "embedded-postgres-binaries-darwin-amd64" % pgVersion % IntegrationTest,
+      // scala-steward:on
     ),
   )
   .configs(IntegrationTest)
