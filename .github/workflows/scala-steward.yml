@@ -1,0 +1,23 @@
+on:
+  schedule:
+    - cron: '0 0 * * 0'
+  workflow_dispatch:
+
+jobs:
+  scala-steward:
+    runs-on: ubuntu-latest
+    name: Run Scala Steward
+    steps:
+      - name: Import GPG key
+        uses: crazy-max/ghaction-import-gpg@v2
+        with:
+          git_user_signingkey: true
+        env:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+      - name: Run Scala Steward
+        uses: scala-steward-org/scala-steward-action@v2
+        with:
+          github-token: ${{ secrets.GH_ACCESS_TOKEN }}
+          author-email: scala-steward@github.com
+          author-name: Scala Steward
+          sign-commits: true
