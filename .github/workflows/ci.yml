@@ -53,7 +53,7 @@ jobs:
       - uses: codecov/codecov-action@v1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          flags: scala-${{matrix.scala}},unit
+          flags: unit-scala-${{matrix.scala}}
           fail_ci_if_error: true
           verbose: true
 
@@ -85,6 +85,6 @@ jobs:
       - uses: codecov/codecov-action@v1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          flags: pg-${{matrix.postgres}},it
+          flags: integrationt-pg-${{matrix.postgres}}
           fail_ci_if_error: true
           verbose: true
