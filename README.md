@@ -1,6 +1,7 @@
 # PostgreSQL Client on Finagle
 
-![CI](https://github.com/plaflamme/finagle-postgresql/workflows/CI/badge.svg)
+[![CI](https://github.com/plaflamme/finagle-postgresql/workflows/CI/badge.svg)](https://github.com/plaflamme/finagle-postgresql/actions)
+[![codecov](https://codecov.io/gh/plaflamme/finagle-postgresql/branch/master/graph/badge.svg?token=TDHKM1J9TY)](https://codecov.io/gh/plaflamme/finagle-postgresql)
 
 This implements a client and a rich client for the Postgres protocol on [Finagle](https://github.com/twitter/finagle).
 
