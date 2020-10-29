@@ -49,11 +49,10 @@ jobs:
       - name: Compile
         run: sbt ++${{matrix.scala}} compile test:compile it:compile
       - name: Run unit tests
-        run: sbt -J-Xmx2G ++${{matrix.scala}} coverage test
+        run: sbt -J-Xmx2G ++${{matrix.scala}} coverage test coverageReport
       - uses: codecov/codecov-action@v1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          file: scoverage.xml
           flags: scala-${{matrix.scala}},unit
           fail_ci_if_error: true
           verbose: true
@@ -82,11 +81,10 @@ jobs:
       - name: Run Integration Tests
         env:
           POSTGRES_VERSION: ${{matrix.postgres}}
-        run: sbt -J-Xmx2G coverage it:test
+        run: sbt -J-Xmx2G coverage it:test coverageReport
       - uses: codecov/codecov-action@v1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          file: scoverage.xml
           flags: pg-${{matrix.postgres}},it
           fail_ci_if_error: true
           verbose: true
