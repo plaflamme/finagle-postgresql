@@ -8,6 +8,7 @@ on:
 
 jobs:
   fmt:
+    if: "!contains(github.event.commits[0].message, '[skip ci]')"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -26,6 +27,7 @@ jobs:
         run: sbt scalafmtCheckAll
 
   build:
+    if: "!contains(github.event.commits[0].message, '[skip ci]')"
     needs: fmt
     strategy:
       matrix:
@@ -58,6 +60,7 @@ jobs:
           verbose: true
 
   it:
+    if: "!contains(github.event.commits[0].message, '[skip ci]')"
     needs: fmt
     strategy:
       matrix:
