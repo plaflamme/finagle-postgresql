@@ -2,7 +2,7 @@ import java.nio.charset.StandardCharsets
 import sbt.{IntegrationTest => SbtIntegrationTest}
 
 val finagleVersion = "20.4.0"
-val specs2Version = "4.9.1"
+val specs2Version = "4.9.4"
 // one of https://mvnrepository.com/artifact/io.zonky.test.postgres/embedded-postgres-binaries-bom
 // though > 12.1.0 doesn't work on MacOS: https://github.com/zonkyio/embedded-postgres-binaries/issues/21
 // We'll have to switch to docker at some point,
