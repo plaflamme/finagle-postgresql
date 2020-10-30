@@ -57,7 +57,7 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           flags: unit-scala-${{matrix.scala}}
           fail_ci_if_error: true
-          verbose: true
+          verbose: false
 
   it:
     if: "!contains(github.event.commits[0].message, '[skip ci]')"
@@ -90,4 +90,4 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           flags: integrationt-pg-${{matrix.postgres}}
           fail_ci_if_error: true
-          verbose: true
+          verbose: false
