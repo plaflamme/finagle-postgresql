@@ -11,12 +11,13 @@ This implements a client and a rich client for the Postgres protocol on [Finagle
 There are at least 2 other PostgreSQL clients for Finagle: [finagle-postgres](https://github.com/finagle/finagle-postgres)
 and [roc](https://github.com/finagle/roc).
 
-The `roc` client seems unmaintained at this point.
-The `finagle-postgres` client is somewhat more maintained, but still suffers from not being updated to the latest
-Finagle style for implementing clients. Upgrading it to the new style would require rewriting a large portion,
-so it seemed equivalently risky to write a new one from scratch. Furthermore, it opens the door to new features like
-properly implementing multi-line queries, implementing the `COPY` protocol and cancellation.
-Lastly, one original goal of this new client was to implement streaming (for result sets and multi queries).
+The `roc` client is incomplete and seems unmaintained at this point.
+
+The `finagle-postgres` client is more complete, but also suffers from lack of maintenance love.
+One main concern is the fact that it is still on the old style of using netty pipelines to implement protocols with Finagle.
+Upgrading it to the new style would require rewriting a large portion, so it seemed equivalently risky to write a new one from scratch.
+Furthermore, it opens the door to new features like properly implementing multi-line queries, implementing the `COPY` protocol and cancellation.
+Lastly, one original goal of this new client was to implement streaming (for result sets and multi-line queries).
 
 ## Status
 
