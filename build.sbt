@@ -3,6 +3,7 @@ import sbt.{IntegrationTest => SbtIntegrationTest}
 
 val finagleVersion = "20.10.0"
 val specs2Version = "4.10.5"
+val dockerItVersion = "0.9.9"
 // one of https://mvnrepository.com/artifact/io.zonky.test.postgres/embedded-postgres-binaries-bom
 // though > 12.1.0 doesn't work on MacOS: https://github.com/zonkyio/embedded-postgres-binaries/issues/21
 // We'll have to switch to docker at some point,
@@ -58,6 +59,10 @@ lazy val finaglePostgresql = Project(id = "finagle-postgresql", base = file("fin
       "io.zonky.test" % "embedded-postgres" % "1.2.8" % IntegrationTest,
       "io.zonky.test.postgres" % "embedded-postgres-binaries-linux-amd64" % pgVersion % IntegrationTest,
       "io.zonky.test.postgres" % "embedded-postgres-binaries-darwin-amd64" % pgVersion % IntegrationTest,
+      "com.whisk" %% "docker-testkit-specs2" % dockerItVersion % IntegrationTest,
+      "com.whisk" %% "docker-testkit-impl-spotify" % dockerItVersion % IntegrationTest,
+      "com.whisk" %% "docker-testkit-impl-docker-java" % dockerItVersion % IntegrationTest,
+      "ch.qos.logback" % "logback-classic" % "1.2.3" % IntegrationTest,
     ),
   )
   .configs(IntegrationTest)
