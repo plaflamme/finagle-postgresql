@@ -37,7 +37,6 @@ nasty concurrency issues.
 - [x] [multi-line simple query support](https://www.postgresql.org/docs/current/protocol-flow.html#PROTOCOL-FLOW-MULTI-STATEMENT)
 - [ ] [COPY operations](https://www.postgresql.org/docs/current/protocol-flow.html#PROTOCOL-COPY)
 - [x] [extended query support](https://www.postgresql.org/docs/current/protocol-flow.html#PROTOCOL-FLOW-EXT-QUERY)
-    - [ ] cache and close prepared statements
     - [x] portal suspension / scanning
 - [ ] [function call](https://www.postgresql.org/docs/current/protocol-flow.html#id-1.10.5.7.6)
 - [x] [TLS](https://www.postgresql.org/docs/current/protocol-flow.html#id-1.10.5.7.11)
@@ -47,6 +46,10 @@ nasty concurrency issues.
 ### Client
 
 - [x] non `Service`-based client (a.k.a: rich client), something like [finagle-mysql](https://github.com/twitter/finagle/blob/develop/finagle-mysql/src/main/scala/com/twitter/finagle/mysql/Client.scala#L66)
+- [x] [reusable prepared statements](https://github.com/twitter/finagle/blob/develop/finagle-mysql/src/main/scala/com/twitter/finagle/mysql/PreparedStatement.scala#L9-L19)
+    - [x] cache and close prepared statements
+- [ ] [transactions](https://github.com/twitter/finagle/blob/develop/finagle-mysql/src/main/scala/com/twitter/finagle/mysql/Client.scala#L210)
+- [ ] [cursor](https://github.com/twitter/finagle/blob/develop/finagle-mysql/src/main/scala/com/twitter/finagle/mysql/CursoredStatement.scala#L26-L37)
 - [ ] error decoding and handling
 - [x] wire value decoding
 - [x] wire value encoding
