@@ -64,7 +64,7 @@ jobs:
     needs: fmt
     strategy:
       matrix:
-        postgres: [12.1.0, 11.8.0, 10.13.0, 9.6.18]
+        postgres: [13, 12, 11, 10, 9]
 
     runs-on: ubuntu-latest
 
@@ -84,7 +84,7 @@ jobs:
       - name: Run Integration Tests
         env:
           POSTGRES_VERSION: ${{matrix.postgres}}
-        run: sbt -J-Xmx2G coverage it:test coverageReport
+        run: CI_UID_GID="$(id -u):$(id -g)" sbt -J-Xmx2G coverage it:test coverageReport
       - uses: codecov/codecov-action@v1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
