@@ -59,17 +59,13 @@ jobs:
           fail_ci_if_error: true
           verbose: false
 
-  it:
+  it-postgres:
     if: "!contains(github.event.commits[0].message, '[skip ci]')"
     needs: fmt
     strategy:
       matrix:
-        backend: ["postgres", "cockroachdb"]
-        include:
-          - backend: "postgres"
-            tag: [13, 12, 11, 10, 9]
-          - backend: "cockroachdb"
-            tag: ["v20.2.0"]
+        backend: ["postgres"]
+        tag: [13, 12, 11, 10, 9]
 
     runs-on: ubuntu-latest
 
@@ -91,6 +87,41 @@ jobs:
           TEST_BACKEND: ${{matrix.backend}}
           TEST_BACKEND_TAG: ${{matrix.tag}}
         run: CI_UID_GID="$(id -u):$(id -g)" sbt -J-Xmx2G coverage it:test coverageReport
+      - uses: codecov/codecov-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          flags: integration-${{matrix.backend}}-${{matrix.tag}}
+          fail_ci_if_error: true
+          verbose: false
+
+  it-crdb:
+    if: "!contains(github.event.commits[0].message, '[skip ci]')"
+    needs: fmt
+    strategy:
+      matrix:
+        backend: ["cockroachdb"]
+        tag: ["v20.2.0"]
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up JDK 1.8
+        uses: joschi/setup-jdk@v2 # AdoptOpenJDK
+        with:
+          java-version: 8
+      - name: Cache sbt and ivy dependencies
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.ivy2/cache
+            ~/.sbt
+          key: ${{ runner.os }}-sbt-${{ hashFiles('**/build.sbt') }}
+      - name: Run Integration Tests
+        env:
+          TEST_BACKEND: ${{matrix.backend}}
+          TEST_BACKEND_TAG: ${{matrix.tag}}
+        run: sbt -J-Xmx2G coverage it:test coverageReport
       - uses: codecov/codecov-action@v1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
