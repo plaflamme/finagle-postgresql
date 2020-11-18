@@ -64,7 +64,12 @@ jobs:
     needs: fmt
     strategy:
       matrix:
-        postgres: [13, 12, 11, 10, 9]
+        backend: ["postgres", "cockroachdb"]
+        include:
+          - backend: "postgres"
+            tag: [13, 12, 11, 10, 9]
+          - backend: "cockroachdb"
+            tag: ["v20.2.0"]
 
     runs-on: ubuntu-latest
 
@@ -83,11 +88,12 @@ jobs:
           key: ${{ runner.os }}-sbt-${{ hashFiles('**/build.sbt') }}
       - name: Run Integration Tests
         env:
-          POSTGRES_VERSION: ${{matrix.postgres}}
+          TEST_BACKEND: ${{matrix.backend}}
+          TEST_BACKEND_TAG: ${{matrix.tag}}
         run: CI_UID_GID="$(id -u):$(id -g)" sbt -J-Xmx2G coverage it:test coverageReport
       - uses: codecov/codecov-action@v1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          flags: integrationt-pg-${{matrix.postgres}}
+          flags: integration-${{matrix.backend}}-${{matrix.tag}}
           fail_ci_if_error: true
           verbose: false
