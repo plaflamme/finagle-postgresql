@@ -1,3 +1,9 @@
+coverage:
+  precision: 0 # the percentage seems to be vary by ~0.3%
+  status:
+    project:
+      default:
+        informational: true # don't block PRs until we fix all flakes
 comment:
   layout: "diff, flags, files"
   behavior: default
