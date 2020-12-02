@@ -10,8 +10,8 @@ object Types {
     case object Binary extends Format
   }
 
-  case class Oid(value: Long)
-  case class AttributeId(value: Short)
+  case class Oid(value: Long) extends AnyVal
+  case class AttributeId(value: Short) extends AnyVal
 
   case class FieldDescription(
     name: String,

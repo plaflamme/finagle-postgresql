@@ -39,6 +39,11 @@ val genPgTypeTask = Def.task {
 // https://www.scala-sbt.org/1.x/docs/Testing.html#Custom+test+configuration
 // By making IntegrationTest extend Test, we make test classes visible to IntegrationTest.
 lazy val IntegrationTest = SbtIntegrationTest.extend(Test)
+lazy val itSettings = Defaults.itSettings ++
+  inConfig(IntegrationTest)(org.scalafmt.sbt.ScalafmtPlugin.scalafmtConfigSettings) ++
+  Seq(
+    fork in IntegrationTest := true,
+  )
 
 lazy val finaglePostgresql = Project(id = "finagle-postgresql", base = file("finagle-postgresql"))
   .settings(
@@ -62,18 +67,16 @@ lazy val finaglePostgresql = Project(id = "finagle-postgresql", base = file("fin
     ),
   )
   .configs(IntegrationTest)
-  .settings(
-    Defaults.itSettings,
-    inConfig(IntegrationTest)(org.scalafmt.sbt.ScalafmtPlugin.scalafmtConfigSettings),
-    fork in IntegrationTest := true,
-  )
+  .settings(itSettings)
 
 lazy val quill = project.in(file("quill"))
+  .configs(IntegrationTest)
   .settings(
     name := "quill-finagle-postgresql",
     base,
     libraryDependencies ++= Seq(
       "io.getquill" %% "quill-sql" % quillVersion,
     ),
+    itSettings,
   )
-  .dependsOn(finaglePostgresql)
+  .dependsOn(finaglePostgresql % s"compile->compile;test->it")

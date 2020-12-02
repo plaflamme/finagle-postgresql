@@ -4,6 +4,7 @@ import java.time.LocalDate
 import java.util.Date
 import java.util.UUID
 
+import com.twitter.finagle.postgresql.Types.Oid
 import com.twitter.finagle.postgresql.types.ValueReads
 import com.twitter.io.Buf
 
@@ -32,6 +33,7 @@ trait FinaglePostgresqlDecoders {
   implicit val byteDecoder: Decoder[Byte] = decoder[Byte]
   implicit val shortDecoder: Decoder[Short] = decoder[Short]
   implicit val intDecoder: Decoder[Int] = decoder[Int]
+  implicit val oidDecoder: Decoder[Oid] = decoder[Oid]
   implicit val longDecoder: Decoder[Long] = decoder[Long]
   implicit val floatDecoder: Decoder[Float] = decoder[Float]
   implicit val doubleDecoder: Decoder[Double] = decoder[Double]

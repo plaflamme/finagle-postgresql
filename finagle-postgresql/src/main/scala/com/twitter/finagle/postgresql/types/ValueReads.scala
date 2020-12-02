@@ -6,6 +6,7 @@ import java.nio.charset.CodingErrorAction
 import com.twitter.finagle.postgresql.PgSqlClientError
 import com.twitter.finagle.postgresql.PgSqlUnsupportedError
 import com.twitter.finagle.postgresql.Types.Inet
+import com.twitter.finagle.postgresql.Types.Oid
 import com.twitter.finagle.postgresql.Types.Timestamp
 import com.twitter.finagle.postgresql.Types.WireValue
 import com.twitter.finagle.postgresql.transport.PgBuf
@@ -194,6 +195,7 @@ object ValueReads {
     PgDate.dayOffsetAsLocalDate(buf.int())
   }
   implicit lazy val readsLong: ValueReads[Long] = simple(PgType.Int8)(_.long())
+  implicit lazy val readsOid: ValueReads[Oid] = simple(PgType.OidType)(b => Oid(b.unsignedInt()))
   implicit lazy val readsShort: ValueReads[Short] = simple(PgType.Int2)(_.short())
   implicit lazy val readsString: ValueReads[String] = new ValueReads[String] {
     def strictDecoder(charset: Charset) =

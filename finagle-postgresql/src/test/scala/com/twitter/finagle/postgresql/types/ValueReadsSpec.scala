@@ -11,6 +11,7 @@ import com.twitter.finagle.postgresql.PgSqlSpec
 import com.twitter.finagle.postgresql.PropertiesSpec
 import com.twitter.finagle.postgresql.Types.Inet
 import com.twitter.finagle.postgresql.Types.NumericSign
+import com.twitter.finagle.postgresql.Types.Oid
 import com.twitter.finagle.postgresql.Types.PgArray
 import com.twitter.finagle.postgresql.Types.PgArrayDim
 import com.twitter.finagle.postgresql.Types.WireValue
@@ -276,6 +277,11 @@ class ValueReadsSpec extends PgSqlSpec with PropertiesSpec {
     "readsLong" should simpleSpec[Long](ValueReads.readsLong, PgType.Int8) { long =>
       mkBuf() { bb =>
         bb.putLong(long)
+      }
+    }
+    "readsOid" should simpleSpec[Oid](ValueReads.readsOid, PgType.OidType) { oid =>
+      mkBuf() { bb =>
+        bb.putInt(oid.value.toInt)
       }
     }
     "readsShort" should simpleSpec[Short](ValueReads.readsShort, PgType.Int2) { short =>

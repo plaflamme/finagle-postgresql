@@ -8,6 +8,7 @@ import io.getquill.context.Context
 import io.getquill.context.StreamingContext
 import io.getquill.context.TranslateContext
 import io.getquill.context.sql.SqlContext
+import io.getquill.util.ContextLogger
 
 import scala.util.Try
 
@@ -31,6 +32,25 @@ class FinaglePostgresqlContext[N <: NamingStrategy](val naming: N, client: Clien
   override type RunBatchActionResult = List[Long]
   override type RunBatchActionReturningResult[T] = List[T]
   override type StreamResult[T] = Future[AsyncStream[T]]
+
+  private val logger = ContextLogger(classOf[FinaglePostgresqlContext[_]])
+
+  def executeQuery[T](
+    sql: String,
+    prepare: Prepare = identityPrepare,
+    extractor: Extractor[T] = identityExtractor
+  ): Future[List[T]] = {
+    val (params, prepared) = prepare(Nil)
+    logger.logQuery(sql, params)
+    client.prepare(sql).select(prepared)(extractor).map(_.toList)
+  }
+
+  def executeQuerySingle[T](
+    sql: String,
+    prepare: Prepare = identityPrepare,
+    extractor: Extractor[T] = identityExtractor
+  ): Future[T] =
+    executeQuery(sql, prepare, extractor).map(handleSingleResult)
 
   override def performIO[T](io: IO[T, _], transactional: Boolean = false): Result[T] =
     transactional match {
