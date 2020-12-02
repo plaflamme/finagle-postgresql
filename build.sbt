@@ -1,9 +1,10 @@
 import java.nio.charset.StandardCharsets
 import sbt.{IntegrationTest => SbtIntegrationTest}
 
-val finagleVersion = "20.10.0"
-val specs2Version = "4.10.5"
 val dockerItVersion = "0.10.0-beta9"
+val finagleVersion = "20.10.0"
+val quillVersion = "3.6.0-RC3"
+val specs2Version = "4.10.5"
 
 val scala212 = "2.12.12"
 val scala213 = "2.13.3"
@@ -24,7 +25,8 @@ lazy val root = Project(
   crossScalaVersions := Nil,
   publish / skip := true
 ).aggregate(
-  finaglePostgresql
+  finaglePostgresql,
+  quill
 )
 
 val genPgTypeTask = Def.task {
@@ -65,3 +67,13 @@ lazy val finaglePostgresql = Project(id = "finagle-postgresql", base = file("fin
     inConfig(IntegrationTest)(org.scalafmt.sbt.ScalafmtPlugin.scalafmtConfigSettings),
     fork in IntegrationTest := true,
   )
+
+lazy val quill = project.in(file("quill"))
+  .settings(
+    name := "quill-finagle-postgresql",
+    base,
+    libraryDependencies ++= Seq(
+      "io.getquill" %% "quill-sql" % quillVersion,
+    ),
+  )
+  .dependsOn(finaglePostgresql)
