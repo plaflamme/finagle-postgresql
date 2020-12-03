@@ -1,6 +1,8 @@
 package com.twitter.finagle.postgresql
 
 import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.ZoneOffset
 import java.util.Date
 import java.util.UUID
 
@@ -40,5 +42,7 @@ trait FinaglePostgresqlEncoders {
   implicit val dateEncoder: Encoder[Date] =
     encoder(ValueWrites.by[java.time.Instant, Date](_.toInstant))
   implicit val localDateEncoder: Encoder[LocalDate] = encoder[java.time.LocalDate]
+  implicit val localDateTimeEncoder: Encoder[LocalDateTime] =
+    encoder(ValueWrites.by[java.time.Instant, LocalDateTime](_.toInstant(ZoneOffset.UTC)))
   implicit val uuidEncoder: Encoder[UUID] = encoder[UUID]
 }
