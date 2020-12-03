@@ -10,9 +10,10 @@ val scala213 = "2.13.3"
 val scalaVersions = Seq(scala212, scala213)
 
 val base = Seq(
-  organization := "com.hopper",
+  organization := "io.github.finagle",
   scalaVersion := scala212,
-  crossScalaVersions := Seq(scala212, scala213)
+  crossScalaVersions := scalaVersions,
+  publishArtifact in packageDoc := false, // TODO
 )
 
 lazy val root = Project(
