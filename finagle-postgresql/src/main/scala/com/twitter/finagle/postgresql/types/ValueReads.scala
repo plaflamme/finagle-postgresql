@@ -23,7 +23,8 @@ import scala.collection.compat._
  * Furthermore, postgres allows creating custom types (i.e.: commonly enums, but any arbitrary type can effectively
  * be created) which also require their own mapping to scala types.
  *
- * The following built-in types and their corresponding scala / java types are provided:
+ * The following built-in types and their corresponding scala / java types are provided
+ * (read this table as "Postgres Type X can be read into Scala / Java Type Y"):
  *
  * | Postgres Type | Scala / Java Type |
  * | --- | --- |
@@ -34,17 +35,19 @@ import scala.collection.compat._
  * | DATE (date) | [[java.time.LocalDate]] |
  * | DOUBLE (float8) | [[Double]] |
  * | INET | [[Inet]] ([[java.net.InetAddress]] and a subnet) |
- * | INTEGER (int, int4) | [[Int]] |
+ * | INTEGER (int, int4) | [[Int]] and [[Long]] |
  * | JSON | [[String]] or [[Json]] |
  * | JSONB | [[Json]] |
  * | NUMERIC (decimal) | [[BigDecimal]] |
- * | REAL (float4) | [[Float]] |
- * | SMALLINT (int2) | [[Short]] and [[Byte]] (since Postgres doesn't have int1) |
+ * | REAL (float4) | [[Float]] and [[Double]] |
+ * | SMALLINT (int2) | [[Short]], [[Int]] and [[Long]]. As well as [[Byte]] (bounds are checked), since Postgres doesn't have `int1`. |
  * | TEXT | [[String]] |
  * | TIMESTAMP | [[java.time.Instant]] |
  * | TIMESTAMP WITH TIME ZONE | [[java.time.Instant]] |
  * | UUID | [[java.util.UUID]] |
  * | VARCHAR | [[String]] |
+ *
+ * @note numeric types don't have the same correspondence for reading and writing.
  *
  * @see [[ValueWrites]]
  * @see [[PgType]]
@@ -89,6 +92,18 @@ trait ValueReads[T] {
    */
   def accepts(tpe: PgType): Boolean
 
+  /**
+   * Returns a `ValueReads` instance that will use `this` if it accepts the type, otherwise
+   * will delegate to `that`.
+   *
+   * @param that the instance to delegate to when `this` does not accept the provided type.
+   * @return a `ValueReads` instance that will use `this` if it accepts the type, otherwise
+   *         will delegate to `that`.
+   * @see [[ValueReads.or]]
+   */
+  def orElse(that: ValueReads[T]): ValueReads[T] =
+    ValueReads.or(this, that)
+
 }
 
 object ValueReads {
@@ -118,6 +133,25 @@ object ValueReads {
     override def accepts(tpe: PgType): Boolean = readsA.accepts(tpe)
   }
 
+  /**
+   * If it accepts the given [[PgType]], uses `first` to read the value, otherwise, use `second`.
+   *
+   * @return an instance of [[ValueReads[T]] that uses `first` if it accepts the [[PgType]], otherwise uses `second`.
+   */
+  def or[T](first: ValueReads[T], second: ValueReads[T]): ValueReads[T] = new ValueReads[T] {
+    override def reads(tpe: PgType, buf: Buf, charset: Charset): Try[T] = {
+      val r = if (first.accepts(tpe)) first else second
+      r.reads(tpe, buf, charset)
+    }
+
+    override def accepts(tpe: PgType): Boolean =
+      first.accepts(tpe) || second.accepts(tpe)
+  }
+
+  /**
+   * Returns a `ValueReads[Option[T]]` that reads any `NULL` value as `None` and delegates non-`NULL` values
+   * to the underlying `ValueReads` instance.
+   */
   implicit def optionReads[T](implicit treads: ValueReads[T]): ValueReads[Option[T]] = new ValueReads[Option[T]] {
     override def reads(tpe: PgType, buf: Buf, charset: Charset): Try[Option[T]] =
       treads.reads(tpe, buf, charset).map(Some(_))
@@ -125,6 +159,11 @@ object ValueReads {
     override def accepts(tpe: PgType): Boolean = treads.accepts(tpe)
   }
 
+  /**
+   * Returns a [[ValueReads]] for a collection of [T] from a Postgres array type.
+   *
+   * For example, this can produce [[ValueReads[List[Int]]] for the [[PgType.Int4Array]] type.
+   */
   implicit def traversableReads[F[_], T](implicit
     treads: ValueReads[T],
     f: Factory[T, F[T]]
@@ -156,17 +195,33 @@ object ValueReads {
       }
   }
 
+  /**
+   * Reads [[BigDecimal]] from [[PgType.Numeric]].
+   */
   implicit lazy val readsBigDecimal: ValueReads[BigDecimal] = simple(PgType.Numeric) { reader =>
     PgNumeric.numericToBigDecimal(reader.numeric())
   }
+
+  /**
+   * Reads [[Boolean]] from [[PgType.Bool]].
+   */
   implicit lazy val readsBoolean: ValueReads[Boolean] = simple(PgType.Bool)(_.byte() != 0)
+
+  /**
+   * Reads [[Buf]] from [[PgType.Bytea]].
+   */
   implicit lazy val readsBuf: ValueReads[Buf] = simple(PgType.Bytea)(_.remainingBuf())
 
-  // Postgres does not have a numeric 1-byte data type. So we use 2-byte value and check bounds.
-  // NOTE: Postgres does have a 1-byte data type (i.e.: "char" with quotes),
-  //   but it's very tricky to use to store numbers, so it's unlikely to be useful in practice.
-  // See https://www.postgresql.org/docs/current/datatype-numeric.html
-  // See https://dba.stackexchange.com/questions/159090/how-to-store-one-byte-integer-in-postgresql
+  /**
+   * Reads [[Byte]] from [[PgType.Int2]].
+   *
+   * Postgres does not have a numeric 1-byte data type. So we use 2-byte value and check bounds.
+   * NOTE: Postgres does have a 1-byte data type (i.e.: "char" with quotes),
+   * but it's very tricky to use to store numbers, so it's unlikely to be useful in practice.
+   *
+   * @see https://www.postgresql.org/docs/current/datatype-numeric.html
+   * @see https://dba.stackexchange.com/questions/159090/how-to-store-one-byte-integer-in-postgresql
+   */
   implicit lazy val readsByte: ValueReads[Byte] = simple(PgType.Int2) { reader =>
     val shortVal = reader.short()
     if (!shortVal.isValidByte) throw new PgSqlClientError(
@@ -174,8 +229,26 @@ object ValueReads {
     )
     shortVal.toByte
   }
-  implicit lazy val readsDouble: ValueReads[Double] = simple(PgType.Float8)(_.double())
+
+  /**
+   * Reads [[Double]] from [[PgType.Float8]].
+   */
+  lazy val readsFloat8: ValueReads[Double] = simple(PgType.Float8)(_.double())
+
+  /**
+   * Reads [[Double]] from [[PgType.Float8]] or [[PgType.Float4]].
+   */
+  implicit lazy val readsDouble: ValueReads[Double] =
+    readsFloat8.orElse(by[Float, Double](_.toDouble)(readsFloat))
+
+  /**
+   * Reads [[Float]] from [[PgType.Float4]].
+   */
   implicit lazy val readsFloat: ValueReads[Float] = simple(PgType.Float4)(_.float())
+
+  /**
+   * Reads [[java.time.Instant]] from [[PgType.Timestamptz]] or [[PgType.Timestamp]].
+   */
   implicit lazy val readsInstant: ValueReads[java.time.Instant] =
     simple(PgType.Timestamptz, PgType.Timestamp) { reader =>
       reader.timestamp() match {
@@ -184,8 +257,25 @@ object ValueReads {
         case Timestamp.Micros(offset) => PgTime.usecOffsetAsInstant(offset)
       }
     }
+
+  /**
+   * Reads [[Inet]] from [[PgType.Inet]].
+   */
   implicit lazy val readsInet: ValueReads[Inet] = simple(PgType.Inet)(_.inet())
-  implicit lazy val readsInt: ValueReads[Int] = simple(PgType.Int4)(_.int())
+
+  /**
+   * Reads [[Int]] from [[PgType.Int4]].
+   */
+  lazy val readsInt4: ValueReads[Int] = simple(PgType.Int4)(_.int())
+
+  /**
+   * Reads [[Int]] from [[PgType.Int4]] or [[readsShort]].
+   */
+  implicit lazy val readsInt: ValueReads[Int] = or(readsInt4, by[Short, Int](_.toInt)(readsShort))
+
+  /**
+   * Reads [[Json]] from [[PgType.Json]] or [[PgType.Jsonb]].
+   */
   implicit lazy val readsJson: ValueReads[Json] = new ValueReads[Json] {
     override def reads(tpe: PgType, buf: Buf, charset: Charset): Try[Json] =
       tpe match {
@@ -204,13 +294,32 @@ object ValueReads {
   implicit lazy val readsLocalDate: ValueReads[java.time.LocalDate] = simple(PgType.Date) { buf =>
     PgDate.dayOffsetAsLocalDate(buf.int())
   }
-  implicit lazy val readsLong: ValueReads[Long] = simple(PgType.Int8)(_.long())
+
+  /**
+   * Reads [[Long]] from [[PgType.Int8]].
+   */
+  lazy val readsInt8: ValueReads[Long] = simple(PgType.Int8)(_.long())
+
+  /**
+   * Reads [[Long]] from [[PgType.Int8]] or [[readsInt]].
+   */
+  implicit lazy val readsLong: ValueReads[Long] = or(readsInt8, by[Int, Long](_.toLong)(readsInt))
+
+  /**
+   * Reads [[Short]] from [[PgType.Int2]].
+   */
   implicit lazy val readsShort: ValueReads[Short] = simple(PgType.Int2)(_.short())
+
+  /**
+   * Reads [[String]] from any of [[PgType.Text]], [[PgType.Json]],
+   * [[PgType.Varchar]], [[PgType.Bpchar]], [[PgType.Name]], [[PgType.Unknown]].
+   */
   implicit lazy val readsString: ValueReads[String] = new ValueReads[String] {
     def strictDecoder(charset: Charset) =
       charset.newDecoder()
         .onMalformedInput(CodingErrorAction.REPORT)
         .onUnmappableCharacter(CodingErrorAction.REPORT)
+
     override def reads(tpe: PgType, buf: Buf, charset: Charset): Try[String] =
       Try(strictDecoder(charset).decode(Buf.ByteBuffer.Owned.extract(buf)).toString)
 
@@ -222,6 +331,10 @@ object ValueReads {
         tpe == PgType.Name || // system identifiers
         tpe == PgType.Unknown // probably used as a fallback to text serialization?
   }
+
+  /**
+   * Reads [[java.util.UUID]] from [[PgType.Uuid]].
+   */
   implicit lazy val readsUuid: ValueReads[java.util.UUID] = simple(PgType.Uuid) { reader =>
     new java.util.UUID(reader.long(), reader.long())
   }
