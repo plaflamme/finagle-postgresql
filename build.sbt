@@ -54,7 +54,7 @@ lazy val finaglePostgresql = Project(id = "finagle-postgresql", base = file("fin
       "org.typelevel" %% "jawn-parser" % "1.1.0" % Test,
       "org.typelevel" %% "jawn-ast" % "1.1.0" % Test,
 
-      "org.postgresql" % "postgresql" % "42.2.19" % IntegrationTest,
+      "org.postgresql" % "postgresql" % "42.2.20" % IntegrationTest,
       "com.whisk" %% "docker-testkit-core-shaded" % dockerItVersion % IntegrationTest,
       "ch.qos.logback" % "logback-classic" % "1.2.3" % IntegrationTest,
     ),
