@@ -5,4 +5,4 @@ addSbtPlugin("org.scoverage" % "sbt-scoverage" % "1.7.3")
 libraryDependencies += "org.scala-lang.modules" %% "scala-parser-combinators" % "1.1.2"
 
 // for StringOps
-libraryDependencies += "com.twitter" %% "util-core" % "21.4.0"
+libraryDependencies += "com.twitter" %% "util-core" % "21.5.0"
