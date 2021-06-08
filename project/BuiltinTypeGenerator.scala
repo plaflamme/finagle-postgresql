@@ -1,7 +1,6 @@
 import java.io.File
 
 import scala.io.Source
-import com.twitter.conversions.StringOps._
 
 object BuiltinTypeGenerator {
 
@@ -11,6 +10,23 @@ object BuiltinTypeGenerator {
   private[this] def snakify(n: String): String =
     n.replaceFirst("^(.*)(vector|range)$", "$1_$2")
       .replaceFirst("^_(.*)$", "$1_array")
+
+  // copied from com.twitter.conversions.StringOps.toPascalCase
+  def toPascalCase(name: String): String = {
+    def loop(x: List[Char]): List[Char] = (x: @unchecked) match {
+      case '_' :: '_' :: rest => loop('_' :: rest)
+      case '_' :: c :: rest => Character.toUpperCase(c) :: loop(rest)
+      case '_' :: Nil => Nil
+      case c :: rest => c :: loop(rest)
+      case Nil => Nil
+    }
+
+    if (name == null) {
+      ""
+    } else {
+      loop('_' :: name.toList).mkString
+    }
+  }
 
   // some generate names conflict with symbols, so we special case them here
   private[this] val Symbols = Set("Oid", "PgType")
@@ -27,7 +43,7 @@ object BuiltinTypeGenerator {
     def snakeIdent = snakify(typname)
 
     def ident = {
-      val id = snakeIdent.toPascalCase
+      val id = toPascalCase(snakeIdent)
       if (!Symbols(id)) id
       else {
         s"${id}Type"
