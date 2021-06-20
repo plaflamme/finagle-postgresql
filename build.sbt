@@ -2,7 +2,7 @@ import java.nio.charset.StandardCharsets
 import sbt.{IntegrationTest => SbtIntegrationTest}
 
 val finagleVersion = "21.5.0"
-val specs2Version = "4.12.0"
+val specs2Version = "4.12.1"
 val dockerItVersion = "0.10.0-beta9"
 
 val scala212 = "2.12.12"
