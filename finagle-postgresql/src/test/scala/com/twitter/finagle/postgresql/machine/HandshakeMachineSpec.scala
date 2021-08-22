@@ -2,7 +2,6 @@ package com.twitter.finagle.postgresql.machine
 
 import java.nio.charset.StandardCharsets
 import java.security.MessageDigest
-
 import com.twitter.finagle.postgresql.BackendMessage
 import com.twitter.finagle.postgresql.BackendMessage.AuthenticationGSS
 import com.twitter.finagle.postgresql.BackendMessage.AuthenticationKerberosV5

@@ -20,9 +20,8 @@ object Params {
   }
 
   /**
-   * A class eligible for configuring the maximum number of prepare
-   * statements.  After creating `num` prepare statements, we'll start purging
-   * old ones.
+   * A class eligible for configuring the maximum number of prepare statements. After creating `num` prepare statements,
+   * we'll start purging old ones.
    */
   case class MaxConcurrentPrepareStatements(num: Int) {
     assert(num > 0, s"$num must be positive")

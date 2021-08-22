@@ -1,7 +1,6 @@
 package com.twitter.finagle.postgresql.transport
 
 import java.nio.charset.StandardCharsets
-
 import com.twitter.finagle.postgresql.PgSqlClientError
 import com.twitter.finagle.postgresql.Types.Format
 import com.twitter.finagle.postgresql.Types.Inet

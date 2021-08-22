@@ -5,7 +5,6 @@ import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
-
 import com.twitter.finagle.postgresql.PgSqlClientError
 import com.twitter.finagle.postgresql.PgSqlIntegrationSpec
 import com.twitter.finagle.postgresql.Postgres
@@ -19,9 +18,9 @@ import org.scalacheck.Gen
 import org.specs2.matcher.describe.Diffable
 
 /**
- * The strategy used here is to use the Postgres' ability to produce wire bytes from a SQL statement.
- * We then read those bytes and send them through ValueReads implementation to confirm that it is able
- * to deserialize the values correctly, without any of the client's machinery.
+ * The strategy used here is to use the Postgres' ability to produce wire bytes from a SQL statement. We then read those
+ * bytes and send them through ValueReads implementation to confirm that it is able to deserialize the values correctly,
+ * without any of the client's machinery.
  *
  * For example, to produce the bytes for the `Int4` type:
  *
@@ -29,21 +28,21 @@ import org.specs2.matcher.describe.Diffable
  *   postgres=# SELECT int4send(1234::"int4");
  *   int4send
  * ------------
- *  \x000004d2
+ *   \x000004d2
  * (1 row)
  * }}}
  *
- * The resulting value (`\x000004d2`) is a hexadecimal string representation of the bytes that will be present on the wire.
- * We use jdbc to execute the statement, extract the bytes and then we send those bytes into `ValueReads`
- * and confirm that we read back the original value.
+ * The resulting value (`\x000004d2`) is a hexadecimal string representation of the bytes that will be present on the
+ * wire. We use jdbc to execute the statement, extract the bytes and then we send those bytes into `ValueReads` and
+ * confirm that we read back the original value.
  *
- * NOTE: the double quotes around the type name is required due to the "char" (OID 18) type which conflicts
- * with the "bpchar" type alias, i.e.: char(n). https://stackoverflow.com/a/42484838
+ * NOTE: the double quotes around the type name is required due to the "char" (OID 18) type which conflicts with the
+ * "bpchar" type alias, i.e.: char(n). https://stackoverflow.com/a/42484838
  *
  * NOTE: because of the type cast from string, there are a few caveats:
  *
- * - the string representation must escape single quotes, e.g.: "My name's Bob" -> "My name''s Bob"
- * - the `ToSqlString` trait is necessary to handle types that require finer control than `.toString`
+ *   - the string representation must escape single quotes, e.g.: "My name's Bob" -> "My name''s Bob"
+ *   - the `ToSqlString` trait is necessary to handle types that require finer control than `.toString`
  */
 class ValueReadsSpec extends PgSqlIntegrationSpec with PropertiesSpec {
 

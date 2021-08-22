@@ -2,7 +2,6 @@ package com.twitter.finagle.postgresql.transport
 
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
-
 import com.twitter.finagle.postgresql.FrontendMessage.Bind
 import com.twitter.finagle.postgresql.FrontendMessage.Describe
 import com.twitter.finagle.postgresql.FrontendMessage.DescriptionTarget

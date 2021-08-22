@@ -4,7 +4,6 @@ import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.charset.StandardCharsets
 import java.time.temporal.ChronoUnit
-
 import com.twitter.finagle.postgresql.PgSqlClientError
 import com.twitter.finagle.postgresql.PgSqlSpec
 import com.twitter.finagle.postgresql.PropertiesSpec

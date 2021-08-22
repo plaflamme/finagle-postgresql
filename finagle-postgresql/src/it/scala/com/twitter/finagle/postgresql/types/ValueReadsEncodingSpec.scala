@@ -1,7 +1,6 @@
 package com.twitter.finagle.postgresql.types
 
 import java.nio.charset.StandardCharsets
-
 import com.twitter.finagle.postgresql.Backend
 import com.twitter.finagle.postgresql.PgSqlIntegrationSpec
 import com.twitter.finagle.postgresql.Postgres

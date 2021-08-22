@@ -5,8 +5,10 @@ import com.twitter.finagle.postgresql.FrontendMessage
 /**
  * A typeclass for encoding [[FrontendMessage]] to a [[Packet]].
  *
- * @see [[MessageDecoder]]
- * @see [[PgBuf.Writer]]
+ * @see
+ *   [[MessageDecoder]]
+ * @see
+ *   [[PgBuf.Writer]]
  */
 trait MessageEncoder[M <: FrontendMessage] {
   def toPacket(m: M): Packet

@@ -1,7 +1,6 @@
 package com.twitter.finagle
 
 import java.net.SocketAddress
-
 import com.twitter.finagle.client.StackClient
 import com.twitter.finagle.client.StdStackClient
 import com.twitter.finagle.client.Transporter

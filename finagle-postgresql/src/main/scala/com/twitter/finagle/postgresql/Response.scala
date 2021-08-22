@@ -2,7 +2,6 @@ package com.twitter.finagle.postgresql
 
 import java.nio.charset.Charset
 import java.time.ZoneId
-
 import com.twitter.finagle.postgresql.Types.FieldDescription
 import com.twitter.finagle.postgresql.Types.Name
 import com.twitter.finagle.postgresql.Types.WireValue

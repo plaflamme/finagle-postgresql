@@ -1,7 +1,6 @@
 package com.twitter.finagle.postgresql
 
 import java.nio.charset.Charset
-
 import com.twitter.finagle.postgresql.Response.ConnectionParameters
 import com.twitter.finagle.postgresql.Types.FieldDescription
 import com.twitter.finagle.postgresql.Types.WireValue
