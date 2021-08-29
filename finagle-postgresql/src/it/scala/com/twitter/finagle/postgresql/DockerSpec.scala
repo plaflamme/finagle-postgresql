@@ -9,7 +9,6 @@ import org.specs2.execute.AsResult
 import org.specs2.execute.Skipped
 import org.specs2.specification.BeforeAfterAll
 import org.specs2.main.ArgumentsShortcuts
-
 import scala.concurrent.ExecutionContext
 
 trait DockerTestKitForAll extends BeforeAfterAll {

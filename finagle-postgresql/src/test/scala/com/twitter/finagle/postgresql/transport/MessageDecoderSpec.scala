@@ -2,7 +2,6 @@ package com.twitter.finagle.postgresql.transport
 
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
-
 import com.twitter.finagle.postgresql.BackendMessage.AuthenticationCleartextPassword
 import com.twitter.finagle.postgresql.BackendMessage.AuthenticationGSS
 import com.twitter.finagle.postgresql.BackendMessage.AuthenticationGSSContinue

@@ -1,7 +1,6 @@
 package com.twitter.finagle.postgresql
 
 import java.nio.charset.StandardCharsets
-
 import com.twitter.finagle.Service
 import com.twitter.finagle.postgresql.BackendMessage.CommandTag
 import com.twitter.finagle.postgresql.Types.Name

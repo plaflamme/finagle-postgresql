@@ -1,7 +1,6 @@
 package com.twitter.finagle.postgresql
 
 import java.sql.DriverManager
-
 import com.twitter.finagle.postgresql.types.PgType
 
 trait Jdbc { _: PostgresConnectionSpec with PgSqlSpec =>

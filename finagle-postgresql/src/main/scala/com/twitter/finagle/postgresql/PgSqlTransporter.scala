@@ -1,7 +1,6 @@
 package com.twitter.finagle.postgresql
 
 import java.net.SocketAddress
-
 import com.twitter.finagle.Stack
 import com.twitter.finagle.client.Transporter
 import com.twitter.finagle.decoder.Framer

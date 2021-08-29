@@ -47,13 +47,11 @@ lazy val finaglePostgresql = Project(id = "finagle-postgresql", base = file("fin
     libraryDependencies ++= Seq(
       "com.twitter" %% "finagle-netty4" % finagleVersion,
       "com.twitter" %% "util-stats" % finagleVersion,
-
       "org.specs2" %% "specs2-core" % specs2Version % Test,
       "org.specs2" %% "specs2-scalacheck" % specs2Version % Test,
       "org.specs2" %% "specs2-matcher-extra" % specs2Version % Test,
       "org.typelevel" %% "jawn-parser" % "1.2.0" % Test,
       "org.typelevel" %% "jawn-ast" % "1.2.0" % Test,
-
       "org.postgresql" % "postgresql" % "42.2.23" % IntegrationTest,
       "com.whisk" %% "docker-testkit-core-shaded" % dockerItVersion % IntegrationTest,
       "ch.qos.logback" % "logback-classic" % "1.2.3" % IntegrationTest,

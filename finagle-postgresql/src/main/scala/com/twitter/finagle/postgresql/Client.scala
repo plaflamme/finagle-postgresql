@@ -1,7 +1,6 @@
 package com.twitter.finagle.postgresql
 
 import java.nio.charset.Charset
-
 import com.twitter.finagle.ServiceFactory
 import com.twitter.finagle.postgresql.Response.Command
 import com.twitter.finagle.postgresql.Response.QueryResponse
@@ -13,7 +12,6 @@ import com.twitter.io.Reader
 import com.twitter.util.Closable
 import com.twitter.util.Future
 import com.twitter.util.Time
-
 import scala.util.hashing.MurmurHash3
 
 trait QueryClient[Q] {
