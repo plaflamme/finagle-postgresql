@@ -36,9 +36,9 @@ import com.twitter.util.Throw
 /**
  * Handles transforming the Postgres protocol to an RPC style.
  *
- * The Postgres protocol is not of the style `request => Future[Response]`.
- * Instead, it uses a stateful protocol where each connection is in a particular state and streams of requests / responses
- * take place to move the connection from one state to another.
+ * The Postgres protocol is not of the style `request => Future[Response]`. Instead, it uses a stateful protocol where
+ * each connection is in a particular state and streams of requests / responses take place to move the connection from
+ * one state to another.
  *
  * The dispatcher is responsible for managing this connection state and transforming the stream of request / response to
  * a single request / response style that conforms to Finagle's request / response style.
@@ -46,13 +46,14 @@ import com.twitter.util.Throw
  * The dispatcher uses state machines to handle the connection state management.
  *
  * When a connection is established, the [[HandshakeMachine]] is immediately executed and takes care of authentication.
- * Subsequent machines to execute are based on the client's query. For example, if the client submits a [[Request.Query]],
- * then the [[SimpleQueryMachine]] will be dispatched to manage the connection's state.
+ * Subsequent machines to execute are based on the client's query. For example, if the client submits a
+ * [[Request.Query]], then the [[SimpleQueryMachine]] will be dispatched to manage the connection's state.
  *
- * Any unexpected error from the state machine will lead to tearing down the connection to make sure we don't
- * reuse a connection in an unknown / bad state.
+ * Any unexpected error from the state machine will lead to tearing down the connection to make sure we don't reuse a
+ * connection in an unknown / bad state.
  *
- * @see [[StateMachine]]
+ * @see
+ *   [[StateMachine]]
  */
 class ClientDispatcher(
   transport: Transport[Packet, Packet],
@@ -134,10 +135,9 @@ object ClientDispatcher {
 }
 
 /**
- * Caches statements that have been successfully prepared over the connection
- * managed by the underlying service (a ClientDispatcher). This decreases
- * the chances of leaking prepared statements and can simplify the
- * implementation of prepared statements in the presence of a connection pool.
+ * Caches statements that have been successfully prepared over the connection managed by the underlying service (a
+ * ClientDispatcher). This decreases the chances of leaking prepared statements and can simplify the implementation of
+ * prepared statements in the presence of a connection pool.
  */
 case class PrepareCache(
   svc: Service[Request, Response],

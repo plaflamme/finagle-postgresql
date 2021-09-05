@@ -24,14 +24,14 @@ import io.netty.channel.Channel
  *
  * https://www.postgresql.org/docs/9.3/protocol-flow.html#AEN100021
  *
- * The flow is that the client should request TLS using the [[FrontendMessage.SslRequest]] message.
- * The backend responds with a single, unframed byte: either 'S' or 'N'.
+ * The flow is that the client should request TLS using the [[FrontendMessage.SslRequest]] message. The backend responds
+ * with a single, unframed byte: either 'S' or 'N'.
  *
- * * 'S' means that the backend is willing to continue with TLS negotiation
- * * 'N' means that the backend doesn't support TLS
+ * * 'S' means that the backend is willing to continue with TLS negotiation * 'N' means that the backend doesn't support
+ * TLS
  *
- * Once TLS negotiation is successful, this transport will insert the provided [[Framer]] into the netty pipeline,
- * where it would have been inserted by [[Netty4ClientChannelInitializer]].
+ * Once TLS negotiation is successful, this transport will insert the provided [[Framer]] into the netty pipeline, where
+ * it would have been inserted by [[Netty4ClientChannelInitializer]].
  *
  * This unfortunately requires reaching behind Finagle's abstractions a little bit.
  */

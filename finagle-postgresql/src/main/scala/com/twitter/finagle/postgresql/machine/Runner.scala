@@ -13,8 +13,8 @@ import com.twitter.util.Throw
 /**
  * An abstraction of a connection to a backend implementing the Postgres protocol.
  *
- * Although this isn't a particular goal of this client, it allows decoupling the protocol implementation
- * from finagle. It could, in theory, be used to implement the protocol on a different transport mechanism.
+ * Although this isn't a particular goal of this client, it allows decoupling the protocol implementation from finagle.
+ * It could, in theory, be used to implement the protocol on a different transport mechanism.
  */
 trait Connection {
 
@@ -33,7 +33,8 @@ trait Connection {
 /**
  * The runner connects state machines to a connection and allows dispatching machines on the connection.
  *
- * @param connection the connection to dispatch machines onto.
+ * @param connection
+ *   the connection to dispatch machines onto.
  */
 class Runner(connection: Connection) {
 
@@ -81,7 +82,8 @@ class Runner(connection: Connection) {
   /**
    * Runs a state machine to completion and fulfills the client response.
    *
-   * @return a `Future` which is fulfilled when the connection is available to dispatch another machine.
+   * @return
+   *   a `Future` which is fulfilled when the connection is available to dispatch another machine.
    */
   def dispatch[R <: Response](machine: StateMachine[R], promise: Promise[R]): Future[Unit] =
     run(machine, promise)

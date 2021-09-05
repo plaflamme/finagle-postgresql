@@ -17,70 +17,81 @@ import com.twitter.io.Buf
 /**
  * Typeclass for encoding Scala/Java types to Postgres wire values.
  *
- * Postgres has its own type system, so the mapping of postgres types to scala types is not 1:1.
- * Furthermore, postgres allows creating custom types (i.e.: commonly enums, but any arbitrary type can effectively
- * be created) which also require their own mapping to scala types.
+ * Postgres has its own type system, so the mapping of postgres types to scala types is not 1:1. Furthermore, postgres
+ * allows creating custom types (i.e.: commonly enums, but any arbitrary type can effectively be created) which also
+ * require their own mapping to scala types.
  *
- * The following built-in types and their corresponding scala / java types are provided
- * * (read this table as "Postgres Type X can be written from Scala / Java Type Y"):
+ * The following built-in types and their corresponding scala / java types are provided * (read this table as "Postgres
+ * Type X can be written from Scala / Java Type Y"):
  *
- * | Postgres Type | Scala / Java Type |
- * | --- | --- |
- * | BIGINT (int8) | [[Long]], [[Int]], [[Short]], [[Byte]] |
- * | BOOL | [[Boolean]] |
- * | BYTEA (byte[]) | [[Buf]] |
- * | CHARACTER(n) | [[String]] |
- * | DATE (date) | [[java.time.LocalDate]] |
- * | DOUBLE (float8) | [[Double]], [[Float]] |
- * | INET | [[Inet]] ([[java.net.InetAddress]] and a subnet) |
- * | INTEGER (int, int4) | [[Int]], [[Short]], [[Byte]] |
- * | JSON | [[String]] or [[Json]] |
- * | JSONB | [[Json]] |
- * | NUMERIC (decimal) | [[BigDecimal]] |
- * | REAL (float4) | [[Float]] |
- * | SMALLINT (int2) | [[Short]] and [[Byte]] |
- * | TEXT | [[String]] |
- * | TIMESTAMP | [[java.time.Instant]] |
- * | TIMESTAMP WITH TIME ZONE | [[java.time.Instant]] |
- * | UUID | [[java.util.UUID]] |
- * | VARCHAR | [[String]] |
+ * | Postgres Type            | Scala / Java Type                                |
+ * |:-------------------------|:-------------------------------------------------|
+ * | BIGINT (int8)            | [[Long]], [[Int]], [[Short]], [[Byte]]           |
+ * | BOOL                     | [[Boolean]]                                      |
+ * | BYTEA (byte[])           | [[Buf]]                                          |
+ * | CHARACTER(n)             | [[String]]                                       |
+ * | DATE (date)              | [[java.time.LocalDate]]                          |
+ * | DOUBLE (float8)          | [[Double]], [[Float]]                            |
+ * | INET                     | [[Inet]] ([[java.net.InetAddress]] and a subnet) |
+ * | INTEGER (int, int4)      | [[Int]], [[Short]], [[Byte]]                     |
+ * | JSON                     | [[String]] or [[Json]]                           |
+ * | JSONB                    | [[Json]]                                         |
+ * | NUMERIC (decimal)        | [[BigDecimal]]                                   |
+ * | REAL (float4)            | [[Float]]                                        |
+ * | SMALLINT (int2)          | [[Short]] and [[Byte]]                           |
+ * | TEXT                     | [[String]]                                       |
+ * | TIMESTAMP                | [[java.time.Instant]]                            |
+ * | TIMESTAMP WITH TIME ZONE | [[java.time.Instant]]                            |
+ * | UUID                     | [[java.util.UUID]]                               |
+ * | VARCHAR                  | [[String]]                                       |
  *
- * @note numeric types don't have the same correspondence for reading and writing.
+ * @note
+ *   numeric types don't have the same correspondence for reading and writing.
  *
- * @see [[ValueReads]]
- * @see [[PgType]]
+ * @see
+ *   [[ValueReads]]
+ * @see
+ *   [[PgType]]
  */
 trait ValueWrites[T] {
 
   /**
    * Encode a value to Postgres' wire representation for a particular Postgres type.
    *
-   * @note It is the responsability of the caller to ensure that the Postgres type is accepted by this implementation.
+   * @note
+   *   It is the responsability of the caller to ensure that the Postgres type is accepted by this implementation.
    *
-   * @param tpe the Postgres type to encode the value into.
-   * @param value the value to encode.
-   * @param charset when applicable, the character set to use when encoding.
-   * @return the encoded value
+   * @param tpe
+   *   the Postgres type to encode the value into.
+   * @param value
+   *   the value to encode.
+   * @param charset
+   *   when applicable, the character set to use when encoding.
+   * @return
+   *   the encoded value
    */
   def writes(tpe: PgType, value: T, charset: Charset): WireValue
 
   /**
-   * Returns true when this implementation is able to encode values of the provided Postgres type.
-   * Returns false otherwise.
+   * Returns true when this implementation is able to encode values of the provided Postgres type. Returns false
+   * otherwise.
    *
-   * @param tpe the Postgres type to check.
-   * @return true if this implementation can encode values for the type, false otherwise.
+   * @param tpe
+   *   the Postgres type to check.
+   * @return
+   *   true if this implementation can encode values for the type, false otherwise.
    */
   def accepts(tpe: PgType): Boolean
 
   /**
-   * Returns a `ValueWrites` instance that will use `this` if it accepts the type, otherwise
-   * will delegate to `that`.
+   * Returns a `ValueWrites` instance that will use `this` if it accepts the type, otherwise will delegate to `that`.
    *
-   * @param that the instance to delegate to when `this` does not accept the provided type.
-   * @return a `ValueWrites` instance that will use `this` if it accepts the type, otherwise
-   *         will delegate to `that`.
-   * @see [[ValueWrites.or]]
+   * @param that
+   *   the instance to delegate to when `this` does not accept the provided type.
+   * @return
+   *   a `ValueWrites` instance that will use `this` if it accepts the type, otherwise will delegate to `that`.
+   * @see
+   *   [[ValueWrites.or]]
    */
   def orElse(that: ValueWrites[T]): ValueWrites[T] =
     ValueWrites.or(this, that)
@@ -111,7 +122,8 @@ object ValueWrites {
   /**
    * If it accepts the given [[PgType]], uses `first` to read the value, otherwise, use `second`.
    *
-   * @return an instance of [[ValueWrites[T]] that uses `first` if it accepts the [[PgType]], otherwise uses `second`.
+   * @return
+   *   an instance of [[ValueWrites[T]] that uses `first` if it accepts the [[PgType]], otherwise uses `second`.
    */
   def or[T](first: ValueWrites[T], second: ValueWrites[T]): ValueWrites[T] = new ValueWrites[T] {
     override def writes(tpe: PgType, value: T, charset: Charset): WireValue = {
@@ -139,7 +151,7 @@ object ValueWrites {
   /**
    * Returns a [[ValueWrites]] able to write a collection of [T] to a Postgres array type.
    *
-   * For example, this can produce [[ValueWrites[List[Int]]] for the [[PgType.Int4Array]] type.
+   * For example, this can produce [[ValueWrites[List[Int]] ] for the [[PgType.Int4Array]] type.
    */
   implicit def traversableWrites[F[X] <: Iterable[X], T](implicit twrites: ValueWrites[T]): ValueWrites[F[T]] =
     new ValueWrites[F[T]] {
@@ -196,12 +208,14 @@ object ValueWrites {
   /**
    * Writes [[Byte]] as a [[Short]].
    *
-   * Postgres does not have a numeric 1-byte data type. So we use 2-byte value and check bounds.
-   * NOTE: Postgres does have a 1-byte data type (i.e.: "char" with quotes),
-   * but it's very tricky to use to store numbers, so it's unlikely to be useful in practice.
+   * Postgres does not have a numeric 1-byte data type. So we use 2-byte value and check bounds. NOTE: Postgres does
+   * have a 1-byte data type (i.e.: "char" with quotes), but it's very tricky to use to store numbers, so it's unlikely
+   * to be useful in practice.
    *
-   * @see https://www.postgresql.org/docs/current/datatype-numeric.html
-   * @see https://dba.stackexchange.com/questions/159090/how-to-store-one-byte-integer-in-postgresql
+   * @see
+   *   https://www.postgresql.org/docs/current/datatype-numeric.html
+   * @see
+   *   https://dba.stackexchange.com/questions/159090/how-to-store-one-byte-integer-in-postgresql
    */
   implicit lazy val writesByte: ValueWrites[Byte] =
     by[Short, Byte](_.toShort)(writesShort)
@@ -289,8 +303,8 @@ object ValueWrites {
     or(writesInt2, by[Int, Short](_.toInt)(writesInt))
 
   /**
-   * Writes [[String]] to any of [[PgType.Text]], [[PgType.Json]],
-   * [[PgType.Varchar]], [[PgType.Bpchar]], [[PgType.Name]], [[PgType.Unknown]].
+   * Writes [[String]] to any of [[PgType.Text]], [[PgType.Json]], [[PgType.Varchar]], [[PgType.Bpchar]],
+   * [[PgType.Name]], [[PgType.Unknown]].
    */
   implicit lazy val writesString: ValueWrites[String] = new ValueWrites[String] {
     def strictEncoder(charset: Charset) =
