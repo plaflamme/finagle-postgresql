@@ -19,7 +19,7 @@ trait PgSqlSpec extends Specification with FutureResult {
   def fragments(f: Seq[Fragment]) = Fragments(f: _*)
 
   /**
-   * A Matcher that uses [[Diffable]]'s definition of being equal.
+   * A Matcher that uses [[Diffable]] 's definition of being equal.
    *
    * This allows defining a custom equals definition.
    *

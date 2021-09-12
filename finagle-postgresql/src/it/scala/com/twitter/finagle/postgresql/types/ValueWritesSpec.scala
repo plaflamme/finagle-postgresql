@@ -20,18 +20,15 @@ import org.specs2.matcher.describe.Diffable
  *
  * And supply the value as a statement parameter and then read the value back.
  *
- * NOTE: the double quotes around the type name is required due to the "char" (OID 18) type which conflicts
- * with the "bpchar" type alias, i.e.: char(n). https://stackoverflow.com/a/42484838
+ * NOTE: the double quotes around the type name is required due to the "char" (OID 18) type which conflicts with the
+ * "bpchar" type alias, i.e.: char(n). https://stackoverflow.com/a/42484838
  *
  * Unfortunately, this relies on a lot of other machinery to work correctly, namely:
  *
- * * rich client
- * * prepared statements
- * * [[ValueReads]] must also exist for the corresponding T
+ * * rich client * prepared statements * [[ValueReads]] must also exist for the corresponding T
  *
- * Another approach would be to write the value to a table and read it back using JDBC.
- * But this would make it difficult to compare the read value since we'd have to go through
- * Java types.
+ * Another approach would be to write the value to a table and read it back using JDBC. But this would make it difficult
+ * to compare the read value since we'd have to go through Java types.
  */
 class ValueWritesSpec extends PgSqlIntegrationSpec with PropertiesSpec {
 

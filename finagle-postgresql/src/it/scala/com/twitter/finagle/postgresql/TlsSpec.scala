@@ -18,23 +18,22 @@ class TlsSpec extends PgSqlIntegrationSpec with ResourceFileSpec {
   /**
    * Here be dragons.
    *
-   * A Docker mount of type "bind" will have the uid:gid of the host user inside the container.
-   * For example, if the host user running `docker run` is `1001:116`, the mounted file in the container will be owned by `1001:116`.
+   * A Docker mount of type "bind" will have the uid:gid of the host user inside the container. For example, if the host
+   * user running `docker run` is `1001:116`, the mounted file in the container will be owned by `1001:116`.
    *
-   * For the TLS private key file, postgres will only accept reading it if it is owned by root or the user running postgres.
-   * Furthermore, it will check that the permissions are not "world readable".
+   * For the TLS private key file, postgres will only accept reading it if it is owned by root or the user running
+   * postgres. Furthermore, it will check that the permissions are not "world readable".
    *
-   * The 2 statements above makes it difficult to provide a private key to postgres: the host user does not exist in the container
-   * yet, it must run own the secret key AND run postgres.
+   * The 2 statements above makes it difficult to provide a private key to postgres: the host user does not exist in the
+   * container yet, it must run own the secret key AND run postgres.
    *
    * The solution used is to run postgres as the host user, but this requires the following workarounds:
    *
-   *   * run the container as the host's `uid:gid`
-   *   * mount the host `/etc/passwd` as `/etc/passwd` in the container so the host user exists
-   *   * use a subdirectory of the default `PGDATA` value so `initdb` can successfully do its thing
+   * * run the container as the host's `uid:gid` * mount the host `/etc/passwd` as `/etc/passwd` in the container so the
+   * host user exists * use a subdirectory of the default `PGDATA` value so `initdb` can successfully do its thing
    *
-   * When necessary, the host user's `uid` and `gid` must be provided using the `CI_UID_GID` environment variable and should
-   * be formatted as `"uid:gid"` (without the double quotes).
+   * When necessary, the host user's `uid` and `gid` must be provided using the `CI_UID_GID` environment variable and
+   * should be formatted as `"uid:gid"` (without the double quotes).
    *
    * NOTE: on OSX none of this is necessary, for some reason, the mounted files are owned by root.
    */

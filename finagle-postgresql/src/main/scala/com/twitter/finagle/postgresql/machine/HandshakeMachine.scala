@@ -26,12 +26,12 @@ import com.twitter.util.Return
 import com.twitter.util.Throw
 
 /**
- * Implements the "Start-up" message flow described here https://www.postgresql.org/docs/current/protocol-flow.html#id-1.10.5.7.3
+ * Implements the "Start-up" message flow described here
+ * https://www.postgresql.org/docs/current/protocol-flow.html#id-1.10.5.7.3
  *
- * This process involves authenticating the client and accumulating parameters about the server's configuration for this connection.
- * Failure to authenticate will produce an exception.
- * A successful response [[Response.ConnectionParameters]] which includes the connection's parameters
- * such as character encoding and timezone.
+ * This process involves authenticating the client and accumulating parameters about the server's configuration for this
+ * connection. Failure to authenticate will produce an exception. A successful response
+ * [[Response.ConnectionParameters]] which includes the connection's parameters such as character encoding and timezone.
  */
 case class HandshakeMachine(credentials: Params.Credentials, database: Params.Database)
     extends StateMachine[Response.ConnectionParameters] {

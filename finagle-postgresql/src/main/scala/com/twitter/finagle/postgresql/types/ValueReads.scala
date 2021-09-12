@@ -19,38 +19,41 @@ import scala.collection.compat._
 /**
  * Typeclass for decoding wire values to Scala/Java types.
  *
- * Postgres has its own type system, so the mapping of postgres types to scala types is not 1:1.
- * Furthermore, postgres allows creating custom types (i.e.: commonly enums, but any arbitrary type can effectively
- * be created) which also require their own mapping to scala types.
+ * Postgres has its own type system, so the mapping of postgres types to scala types is not 1:1. Furthermore, postgres
+ * allows creating custom types (i.e.: commonly enums, but any arbitrary type can effectively be created) which also
+ * require their own mapping to scala types.
  *
- * The following built-in types and their corresponding scala / java types are provided
- * (read this table as "Postgres Type X can be read into Scala / Java Type Y"):
+ * The following built-in types and their corresponding scala / java types are provided (read this table as "Postgres
+ * Type X can be read into Scala / Java Type Y"):
  *
- * | Postgres Type | Scala / Java Type |
- * | --- | --- |
- * | BIGINT (int8) | [[Long]] |
- * | BOOL | [[Boolean]] |
- * | BYTEA (byte[]) | [[Buf]] |
- * | CHARACTER(n) | [[String]] |
- * | DATE (date) | [[java.time.LocalDate]] |
- * | DOUBLE (float8) | [[Double]] |
- * | INET | [[Inet]] ([[java.net.InetAddress]] and a subnet) |
- * | INTEGER (int, int4) | [[Int]] and [[Long]] |
- * | JSON | [[String]] or [[Json]] |
- * | JSONB | [[Json]] |
- * | NUMERIC (decimal) | [[BigDecimal]] |
- * | REAL (float4) | [[Float]] and [[Double]] |
- * | SMALLINT (int2) | [[Short]], [[Int]] and [[Long]]. As well as [[Byte]] (bounds are checked), since Postgres doesn't have `int1`. |
- * | TEXT | [[String]] |
- * | TIMESTAMP | [[java.time.Instant]] |
- * | TIMESTAMP WITH TIME ZONE | [[java.time.Instant]] |
- * | UUID | [[java.util.UUID]] |
- * | VARCHAR | [[String]] |
+ * | Postgres Type            | Scala / Java Type                                                                                              |
+ * |:-------------------------|:---------------------------------------------------------------------------------------------------------------|
+ * | BIGINT (int8)            | [[Long]]                                                                                                       |
+ * | BOOL                     | [[Boolean]]                                                                                                    |
+ * | BYTEA (byte[])           | [[Buf]]                                                                                                        |
+ * | CHARACTER(n)             | [[String]]                                                                                                     |
+ * | DATE (date)              | [[java.time.LocalDate]]                                                                                        |
+ * | DOUBLE (float8)          | [[Double]]                                                                                                     |
+ * | INET                     | [[Inet]] ([[java.net.InetAddress]] and a subnet)                                                               |
+ * | INTEGER (int, int4)      | [[Int]] and [[Long]]                                                                                           |
+ * | JSON                     | [[String]] or [[Json]]                                                                                         |
+ * | JSONB                    | [[Json]]                                                                                                       |
+ * | NUMERIC (decimal)        | [[BigDecimal]]                                                                                                 |
+ * | REAL (float4)            | [[Float]] and [[Double]]                                                                                       |
+ * | SMALLINT (int2)          | [[Short]], [[Int]] and [[Long]]. As well as [[Byte]] (bounds are checked), since Postgres doesn't have `int1`. |
+ * | TEXT                     | [[String]]                                                                                                     |
+ * | TIMESTAMP                | [[java.time.Instant]]                                                                                          |
+ * | TIMESTAMP WITH TIME ZONE | [[java.time.Instant]]                                                                                          |
+ * | UUID                     | [[java.util.UUID]]                                                                                             |
+ * | VARCHAR                  | [[String]]                                                                                                     |
  *
- * @note numeric types don't have the same correspondence for reading and writing.
+ * @note
+ *   numeric types don't have the same correspondence for reading and writing.
  *
- * @see [[ValueWrites]]
- * @see [[PgType]]
+ * @see
+ *   [[ValueWrites]]
+ * @see
+ *   [[PgType]]
  */
 trait ValueReads[T] {
 
@@ -60,9 +63,8 @@ trait ValueReads[T] {
   def reads(tpe: PgType, buf: Buf, charset: Charset): Try[T]
 
   /**
-   * Produce the value corresponding to the SQL NULL.
-   * Note that typically, there is no sensical value (i.e.: there's no Int value to produce for a NULL), thus this
-   * method has a default implementation of producing an error.
+   * Produce the value corresponding to the SQL NULL. Note that typically, there is no sensical value (i.e.: there's no
+   * Int value to produce for a NULL), thus this method has a default implementation of producing an error.
    */
   def readsNull(tpe: PgType): Try[T] =
     Throw(new IllegalArgumentException(
@@ -70,14 +72,18 @@ trait ValueReads[T] {
     ))
 
   /**
-   * Decode a potentially `NULL` wire value into the requested scala type.
-   * Note that no further validation is done on the passed in `PgType`, the client is expected to have
-   * invoked [[accepts()]] first. Not respecting this may lead to successfully reading an invalid value.
+   * Decode a potentially `NULL` wire value into the requested scala type. Note that no further validation is done on
+   * the passed in `PgType`, the client is expected to have invoked [[accepts()]] first. Not respecting this may lead to
+   * successfully reading an invalid value.
    *
-   * @param tpe the postgres type to decode (used when the typeclass supports more than one).
-   * @param value the value on the wire. This may be NULL.
-   * @param charset the server's character set (necessary for decoding strings).
-   * @return the decoded value or an exception
+   * @param tpe
+   *   the postgres type to decode (used when the typeclass supports more than one).
+   * @param value
+   *   the value on the wire. This may be NULL.
+   * @param charset
+   *   the server's character set (necessary for decoding strings).
+   * @return
+   *   the decoded value or an exception
    */
   def reads(tpe: PgType, value: WireValue, charset: Charset): Try[T] = value match {
     case WireValue.Null => readsNull(tpe)
@@ -87,19 +93,22 @@ trait ValueReads[T] {
   /**
    * Returns true if this typeclass is able to decode a wire value of the specified type.
    *
-   * @param tpe the type of the wire value to decode.
-   * @return true if this typeclass can decode the value, false otherwise.
+   * @param tpe
+   *   the type of the wire value to decode.
+   * @return
+   *   true if this typeclass can decode the value, false otherwise.
    */
   def accepts(tpe: PgType): Boolean
 
   /**
-   * Returns a `ValueReads` instance that will use `this` if it accepts the type, otherwise
-   * will delegate to `that`.
+   * Returns a `ValueReads` instance that will use `this` if it accepts the type, otherwise will delegate to `that`.
    *
-   * @param that the instance to delegate to when `this` does not accept the provided type.
-   * @return a `ValueReads` instance that will use `this` if it accepts the type, otherwise
-   *         will delegate to `that`.
-   * @see [[ValueReads.or]]
+   * @param that
+   *   the instance to delegate to when `this` does not accept the provided type.
+   * @return
+   *   a `ValueReads` instance that will use `this` if it accepts the type, otherwise will delegate to `that`.
+   * @see
+   *   [[ValueReads.or]]
    */
   def orElse(that: ValueReads[T]): ValueReads[T] =
     ValueReads.or(this, that)
@@ -136,7 +145,8 @@ object ValueReads {
   /**
    * If it accepts the given [[PgType]], uses `first` to read the value, otherwise, use `second`.
    *
-   * @return an instance of [[ValueReads[T]] that uses `first` if it accepts the [[PgType]], otherwise uses `second`.
+   * @return
+   *   an instance of [[ValueReads[T]] that uses `first` if it accepts the [[PgType]], otherwise uses `second`.
    */
   def or[T](first: ValueReads[T], second: ValueReads[T]): ValueReads[T] = new ValueReads[T] {
     override def reads(tpe: PgType, buf: Buf, charset: Charset): Try[T] = {
@@ -149,8 +159,8 @@ object ValueReads {
   }
 
   /**
-   * Returns a `ValueReads[Option[T]]` that reads any `NULL` value as `None` and delegates non-`NULL` values
-   * to the underlying `ValueReads` instance.
+   * Returns a `ValueReads[Option[T]]` that reads any `NULL` value as `None` and delegates non-`NULL` values to the
+   * underlying `ValueReads` instance.
    */
   implicit def optionReads[T](implicit treads: ValueReads[T]): ValueReads[Option[T]] = new ValueReads[Option[T]] {
     override def reads(tpe: PgType, buf: Buf, charset: Charset): Try[Option[T]] =
@@ -162,7 +172,7 @@ object ValueReads {
   /**
    * Returns a [[ValueReads]] for a collection of [T] from a Postgres array type.
    *
-   * For example, this can produce [[ValueReads[List[Int]]] for the [[PgType.Int4Array]] type.
+   * For example, this can produce [[ValueReads[List[Int]] ] for the [[PgType.Int4Array]] type.
    */
   implicit def traversableReads[F[_], T](implicit
     treads: ValueReads[T],
@@ -215,12 +225,14 @@ object ValueReads {
   /**
    * Reads [[Byte]] from [[PgType.Int2]].
    *
-   * Postgres does not have a numeric 1-byte data type. So we use 2-byte value and check bounds.
-   * NOTE: Postgres does have a 1-byte data type (i.e.: "char" with quotes),
-   * but it's very tricky to use to store numbers, so it's unlikely to be useful in practice.
+   * Postgres does not have a numeric 1-byte data type. So we use 2-byte value and check bounds. NOTE: Postgres does
+   * have a 1-byte data type (i.e.: "char" with quotes), but it's very tricky to use to store numbers, so it's unlikely
+   * to be useful in practice.
    *
-   * @see https://www.postgresql.org/docs/current/datatype-numeric.html
-   * @see https://dba.stackexchange.com/questions/159090/how-to-store-one-byte-integer-in-postgresql
+   * @see
+   *   https://www.postgresql.org/docs/current/datatype-numeric.html
+   * @see
+   *   https://dba.stackexchange.com/questions/159090/how-to-store-one-byte-integer-in-postgresql
    */
   implicit lazy val readsByte: ValueReads[Byte] = simple(PgType.Int2) { reader =>
     val shortVal = reader.short()
@@ -311,8 +323,8 @@ object ValueReads {
   implicit lazy val readsShort: ValueReads[Short] = simple(PgType.Int2)(_.short())
 
   /**
-   * Reads [[String]] from any of [[PgType.Text]], [[PgType.Json]],
-   * [[PgType.Varchar]], [[PgType.Bpchar]], [[PgType.Name]], [[PgType.Unknown]].
+   * Reads [[String]] from any of [[PgType.Text]], [[PgType.Json]], [[PgType.Varchar]], [[PgType.Bpchar]],
+   * [[PgType.Name]], [[PgType.Unknown]].
    */
   implicit lazy val readsString: ValueReads[String] = new ValueReads[String] {
     def strictDecoder(charset: Charset) =

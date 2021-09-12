@@ -10,13 +10,11 @@ object Request {
   /**
    * Synthetic request to extract the current connection's parameters.
    *
-   * During connection establishment (i.e.: before any request is sent) the backend sends a set
-   * of parameter status values to the client. These are accumulated in the dispatcher which isn't
-   * accessible by the client.
+   * During connection establishment (i.e.: before any request is sent) the backend sends a set of parameter status
+   * values to the client. These are accumulated in the dispatcher which isn't accessible by the client.
    *
-   * This request can be used to obtain those parameters.
-   * Note that in order for these to be meaningful for subsequent requests, those
-   * must be made on the same connection. For example:
+   * This request can be used to obtain those parameters. Note that in order for these to be meaningful for subsequent
+   * requests, those must be made on the same connection. For example:
    *
    * {{{
    *   val sf: ServiceFactory[Request, Response]
@@ -30,7 +28,8 @@ object Request {
    *   }
    * }}}
    *
-   * @see [[Response.ConnectionParameters]]
+   * @see
+   *   [[Response.ConnectionParameters]]
    */
   case object ConnectionParameters extends Request
   case object Sync extends Request
