@@ -21,13 +21,16 @@ import com.twitter.util.Return
 import com.twitter.util.Throw
 
 /**
- * Implements part of the "Extended Query" message flow described here https://www.postgresql.org/docs/current/protocol-flow.html#PROTOCOL-FLOW-EXT-QUERY.
+ * Implements part of the "Extended Query" message flow described here
+ * https://www.postgresql.org/docs/current/protocol-flow.html#PROTOCOL-FLOW-EXT-QUERY.
  *
- * This machine is used in combination with [[ExecuteMachine]]. That is, after executing this machine,
- * an execution of [[ExecuteMachine]] is required to obtain the results.
+ * This machine is used in combination with [[ExecuteMachine]]. That is, after executing this machine, an execution of
+ * [[ExecuteMachine]] is required to obtain the results.
  *
- * @param name the portal's name to create or overwrite.
- * @param statement the statement to prepare.
+ * @param name
+ *   the portal's name to create or overwrite.
+ * @param statement
+ *   the statement to prepare.
  */
 class PrepareMachine(name: Name, statement: String) extends StateMachine[Response.ParseComplete] {
 

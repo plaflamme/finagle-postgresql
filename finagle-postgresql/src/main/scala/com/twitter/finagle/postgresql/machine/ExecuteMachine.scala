@@ -38,15 +38,16 @@ import com.twitter.util.Throw
 import com.twitter.util.Try
 
 /**
- * Implements part of the "Extended Query" message flow described here https://www.postgresql.org/docs/current/protocol-flow.html#PROTOCOL-FLOW-EXT-QUERY.
+ * Implements part of the "Extended Query" message flow described here
+ * https://www.postgresql.org/docs/current/protocol-flow.html#PROTOCOL-FLOW-EXT-QUERY.
  *
  * This machine is used in combination with [[PrepareMachine]]. That is, before executing this machine, a prior
  * execution of [[PrepareMachine]] must have taken place.
  *
- * NOTE: this machine is slightly different from other ones in that it will send multiple messages on start and then
- * a [[Flush]]. The reason is because the message flow is different in this case and the backend does not send
- * individual responses until the [[Flush]] is received. The machine expects responses to come back in order,
- * but it's not entirely clear if the backend is allowed to send them in a different order.
+ * NOTE: this machine is slightly different from other ones in that it will send multiple messages on start and then a
+ * [[Flush]]. The reason is because the message flow is different in this case and the backend does not send individual
+ * responses until the [[Flush]] is received. The machine expects responses to come back in order, but it's not entirely
+ * clear if the backend is allowed to send them in a different order.
  *
  * Also note that this machine is used for both executing a portal as well as resuming a previously executed one.
  */

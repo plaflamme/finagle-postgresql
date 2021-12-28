@@ -52,8 +52,10 @@ import scala.annotation.tailrec
 /**
  * A typeclass for decoding [[BackendMessage]] from a [[Packet]].
  *
- * @see [[MessageEncoder]]
- * @see [[PgBuf.Reader]]
+ * @see
+ *   [[MessageEncoder]]
+ * @see
+ *   [[PgBuf.Reader]]
  */
 trait MessageDecoder[M <: BackendMessage] {
   def decode(b: PgBuf.Reader): Try[M]
